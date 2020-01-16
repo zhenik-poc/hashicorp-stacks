@@ -1,5 +1,6 @@
 # MinIO + Kafka
 
+`NB!` Pay attention that Zookeeper, Kafka and Schema registry are `Confluent distribution`
 ## Install mc (minio client)
 ```bash
 wget https://dl.min.io/client/mc/release/linux-amd64/mc
