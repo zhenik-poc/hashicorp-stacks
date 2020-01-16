@@ -1,0 +1,12 @@
+{{range services}}
+  {{$service:=.Name}}
+  !!!
+  {{range .Tags}}
+    {{if eq . "zookeeper-client" }}
+      {{$service}}
+      {{range service $service "passing" }}
+        server {{.Name}} {{.Address}}:{{.Port}}
+      {{end}}
+    {{end}}
+  {{end}}
+{{end}}

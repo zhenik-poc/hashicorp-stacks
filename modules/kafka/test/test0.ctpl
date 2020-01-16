@@ -1,0 +1,1 @@
+"{{range service "kafka-broker|any"}}{{.Address}}:{{.Port}},{{end}}"

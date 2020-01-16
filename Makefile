@@ -5,8 +5,11 @@ NETWORK_INTERFACE_MAC := en0
 NETWORK_INTERFACE_LINUX := docker0
 NETWORK_INTERFACE := ${NETWORK_INTERFACE_LINUX}
 
-X_TEST_NOMAD_JOB := ./modules/zookeeper/containers/zookeeper_unique_tasks.nomad
-X_TEST_NOMAD_JOB_NAME := zookeeper-cluster
+X_TEST_ZOOKEEPER_JOB := ./modules/zookeeper/containers/zookeeper_unique_tasks.nomad
+X_TEST_ZOOKEEPER_JOB_NAME := zookeeper-cluster
+
+X_TEST_KAFKA_JOB := ./modules/kafka/containers/kafka_1_broker.nomad
+X_TEST_KAFKA_JOB_NAME := kafka-cluster
 
 
 .PHONY: all
@@ -27,22 +30,25 @@ nomad:
 vault:
 	sudo vault server -dev --dev-listen-address=${HOST_DOCKER}:8200 -dev-root-token-id=root
 
+# zookeeper
 .PHONY: zoo-run
 zoo-run:
-	nomad run ./job_experiments/zookeeper_unique_tasks.nomad
-
+	nomad run ${X_TEST_ZOOKEEPER_JOB}
 .PHONY: zoo-stop
 zoo-stop:
-	nomad stop kafka-zookeeper
+	nomad stop ${X_TEST_ZOOKEEPER_JOB_NAME}
+.PHONY: zoo-status
+zoo-status:
+	nomad status ${X_TEST_ZOOKEEPER_JOB_NAME}
 
-.PHONY: test-run
-test-run:
-	nomad run ${X_TEST_NOMAD_JOB}
-
-.PHONY: test-stop
-test-stop:
-	nomad stop ${X_TEST_NOMAD_JOB_NAME}
-.PHONY: test-status
-test-status:
-	nomad status ${X_TEST_NOMAD_JOB_NAME}
+# kafka
+.PHONY: kafka-run
+kafka-run:
+	nomad run ${X_TEST_KAFKA_JOB}
+.PHONY: kafka-stop
+kafka-stop:
+	nomad stop ${X_TEST_KAFKA_JOB_NAME}
+.PHONY: kafka-status
+kafka-status:
+	nomad status ${X_TEST_KAFKA_JOB_NAME}
 

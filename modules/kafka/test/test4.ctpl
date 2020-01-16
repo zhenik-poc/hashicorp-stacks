@@ -1,0 +1,1 @@
+KAFKA_ZOOKEEPER_CONNECT = "{{range service "zookeeper-client|any"}}{{.Address}}:{{.Port}},{{end}}"

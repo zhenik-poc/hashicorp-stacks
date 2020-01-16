@@ -1,0 +1,1 @@
+KAFKA_ZOOKEEPER_CONNECT = {{range services}}{{if in .Tags "zookeeper-client"}}{{$services:=service .Name "passing"}}{{range $services}}{{if in .Tags "zookeeper-client"}}{{.Address}}:{{.Port}},{{end}}{{end}}{{end}}{{end}}
