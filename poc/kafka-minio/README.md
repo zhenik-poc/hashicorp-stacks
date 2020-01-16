@@ -69,7 +69,7 @@ docker-compose exec kafka kafka-topics --list --zookeeper zookeeper:2181
 List kafka topics
 ```bash
 docker run --tty \
-           --network docker-start_default \
+           --network kafka-minio_default \
            confluentinc/cp-kafkacat \
            kafkacat -b kafka:9092 \
                     -L
