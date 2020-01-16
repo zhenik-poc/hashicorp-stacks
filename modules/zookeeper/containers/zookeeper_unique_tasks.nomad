@@ -93,7 +93,7 @@ log4j.appender.ROLLINGFILE.layout.ConversionPattern=%d{ISO8601} [myid:%X{myid}] 
 EOF
       }
       config {
-        image = "zhenik/nomad-zoo:3.5.5"
+        image = "zookeeper:3.5.5"
         labels { group = "zk-docker" }
         network_mode = "host"
         port_map {
@@ -252,7 +252,7 @@ log4j.appender.ROLLINGFILE.layout.ConversionPattern=%d{ISO8601} [myid:%X{myid}] 
 EOF
       }
       config {
-        image = "zhenik/nomad-zoo:3.5.5"
+        image = "zookeeper:3.5.5"
         labels {
           group = "zk-docker"
         }
@@ -375,7 +375,7 @@ log4j.appender.ROLLINGFILE.layout.ConversionPattern=%d{ISO8601} [myid:%X{myid}] 
 EOF
       }
       config {
-        image = "zhenik/nomad-zoo:3.5.5"
+        image = "zookeeper:3.5.5"
         labels {
             group = "zk-docker"
         }
