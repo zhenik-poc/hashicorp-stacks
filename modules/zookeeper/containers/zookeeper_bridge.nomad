@@ -52,7 +52,7 @@ EOF
         splay = "1m"
         data = <<EOF
 {{range $i, $clients := service "zookeeper-client|any"}}
-server.{{ $i | add 1 }}={{.Address}}:{{with $peers1 := service "kafka-zookeeper-peer1|any"}}{{with index $peers1 $i}}{{.Port}}{{end}}{{end}}:{{with $peers2 := service "zookeeper-peer2|any"}}{{with index $peers2 $i}}{{.Port}}{{end}}{{end}};{{.Port}}
+server.{{ $i | add 1 }}={{.Address}}:{{with $peers1 := service "zookeeper-peer1|any"}}{{with index $peers1 $i}}{{.Port}}{{end}}{{end}}:{{with $peers2 := service "zookeeper-peer2|any"}}{{with index $peers2 $i}}{{.Port}}{{end}}{{end}};{{.Port}}
 {{ end }}
 EOF
       }
@@ -115,7 +115,7 @@ EOF
         cpu = 100
         memory = 128
         network {
-          mbits = 10
+          mode = "bridge"
           port "client" {}
           port "peer1" {}
           port "peer2" {}
@@ -129,15 +129,6 @@ EOF
         tags = [
           "zookeeper-client"
         ]
-        check {
-          type = "script"
-          name = "zookeeper_cfg_exists"
-          command = "/bin/bash"
-          args = ["-c", "test -f /conf/zoo.cfg"]
-          interval = "5s"
-          timeout = "5s"
-          initial_status = "passing"
-        }
       }
       service {
         port = "peer1"
@@ -145,15 +136,6 @@ EOF
         tags = [
           "zookeeper-peer1"
         ]
-        check {
-          type = "script"
-          name = "zookeeper_cfg_exists"
-          command = "/bin/bash"
-          args = ["-c", "test -f /conf/zoo.cfg"]
-          interval = "5s"
-          timeout = "5s"
-          initial_status = "passing"
-        }
       }
       service {
         port = "peer2"
@@ -161,17 +143,6 @@ EOF
         tags = [
           "zookeeper-peer2"
         ]
-        check {
-          type = "script"
-          name = "zookeeper_cfg_exists"
-          command = "/bin/bash"
-          args = [
-            "-c",
-            "test -f /conf/zoo.cfg"]
-          interval = "5s"
-          timeout = "5s"
-          initial_status = "passing"
-        }
       }
     }
   }
