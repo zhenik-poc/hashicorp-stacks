@@ -1,7 +1,20 @@
 # MinIO + Kafka
-
 `NB!` Pay attention that Zookeeper, Kafka and Schema registry are `Confluent distribution`
+## How to run example
+1 - prepare infrastructure 
+```bash
+make
+```
+
+2 - run event consumer
+```bash
+make kafka-event-consumer-run
+```
+
+3 - upload `.img` file to `minio/images` -> UI `localhost:9000`
+ 
 ## Install mc (minio client)
+
 ```bash
 wget https://dl.min.io/client/mc/release/linux-amd64/mc
 chmod +x mc
