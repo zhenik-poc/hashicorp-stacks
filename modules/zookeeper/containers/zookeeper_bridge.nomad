@@ -4,7 +4,7 @@ job "zookeeper-cluster" {
   update { max_parallel = 1 }
 
   group "zk" {
-    count = 3
+    count = 1
     restart {
       attempts = 2
       interval = "5m"
@@ -30,13 +30,14 @@ EOF
      //default config
       template {
         destination = "local/conf/zoo.cfg"
-        change_mode = "restart"
+        change_mode = "noop"
         splay = "1m"
         data = <<EOF
 tickTime=2000
 initLimit=5
 syncLimit=2
-standaloneEnabled=false
+#standaloneEnabled=false
+standaloneEnabled=true
 reconfigEnabled=true
 skipACL=true
 zookeeper.datadir.autocreate=true
@@ -48,7 +49,7 @@ EOF
       //dynamic config
       template {
         destination = "local/conf/zoo.cfg.dynamic"
-        change_mode = "restart"
+        change_mode = "noop"
         splay = "1m"
         data = <<EOF
 {{range $i, $clients := service "zookeeper-client|any"}}
@@ -102,7 +103,7 @@ EOF
             client = 2181
             peer1 = 2888
             peer2 = 3888
-            httpBind = 8080
+            http = 8080
         }
         volumes = [
           "local/conf:/conf",
@@ -115,14 +116,26 @@ EOF
         cpu = 100
         memory = 128
         network {
-          mode = "bridge"
+//          mode = "bridge"
           port "client" {}
           port "peer1" {}
           port "peer2" {}
-          port "httpBind" {}
+          port "http" {}
         }
       }
-
+      service {
+        port = "http"
+        tags = [
+          "zookeeper-client-http"
+        ]
+        check {
+          name = "http available"
+          type = "http"
+          path = "/commands"
+          interval = "30s"
+          timeout  = "10s"
+        }
+      }
       service {
         port = "client"
         name = "zookeeper-client"

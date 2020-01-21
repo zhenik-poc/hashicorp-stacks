@@ -30,7 +30,7 @@ EOF
       //default config
       template {
         destination = "local/conf/zoo.cfg"
-        change_mode = "restart"
+        change_mode = "noop"
         splay = "1m"
         data = <<EOF
 tickTime=2000
@@ -48,7 +48,7 @@ EOF
       //dynamic config
       template {
         destination = "local/conf/zoo.cfg.dynamic"
-        change_mode = "restart"
+        change_mode = "noop"
         splay = "1m"
         data = <<EOF
 server.1={{ env "NOMAD_IP_client" }}:{{ env "NOMAD_HOST_PORT_peer1" }}:{{ env "NOMAD_HOST_PORT_peer2" }};{{ env "NOMAD_HOST_PORT_client" }}
@@ -100,7 +100,7 @@ EOF
             client = 2181
             peer1 = 2888
             peer2 = 3888
-            httpBind = 8080
+            http = 8080
         }
         volumes = [
           "local/conf:/conf",
@@ -117,7 +117,20 @@ EOF
           port "client" {}
           port "peer1" {}
           port "peer2" {}
-          port "httpBind" {}
+          port "http" {}
+        }
+      }
+      service {
+        port = "http"
+        tags = [
+          "zookeeper-client-http"
+        ]
+        check {
+          name = "check http service"
+          type = "http"
+          path = "/commands"
+          interval = "10s"
+          timeout  = "2s"
         }
       }
       service {
@@ -191,7 +204,7 @@ EOF
       }
       template {
         destination = "local/conf/zoo.cfg"
-        change_mode = "restart"
+        change_mode = "noop"
         splay = "1m"
         data = <<EOF
 tickTime=2000
@@ -208,7 +221,7 @@ EOF
       }
       template {
         destination = "local/conf/zoo.cfg.dynamic"
-        change_mode = "restart"
+        change_mode = "noop"
         splay = "1m"
         data = <<EOF
 server.1={{ env "NOMAD_IP_zk1_client" }}:{{ env "NOMAD_PORT_zk1_peer1" }}:{{ env "NOMAD_PORT_zk1_peer2" }};{{ env "NOMAD_PORT_zk1_client" }}
@@ -261,7 +274,7 @@ EOF
           client = 2181
           peer1 = 2888
           peer2 = 3888
-          httpBind = 8080
+          http = 8080
         }
         volumes = [
           "local/conf:/conf",
@@ -280,7 +293,7 @@ EOF
           port "client" {}
           port "peer1" {}
           port "peer2" {}
-          port "httpBind" {}
+          port "http" {}
         }
       }
       service {
@@ -314,7 +327,7 @@ EOF
       }
       template {
         destination = "local/conf/zoo.cfg"
-        change_mode = "restart"
+        change_mode = "noop"
         splay = "1m"
         data = <<EOF
 tickTime=2000
@@ -331,7 +344,7 @@ EOF
       }
       template {
         destination = "local/conf/zoo.cfg.dynamic"
-        change_mode = "restart"
+        change_mode = "noop"
         splay = "1m"
         data = <<EOF
 server.1={{ env "NOMAD_IP_zk1_client" }}:{{ env "NOMAD_PORT_zk1_peer1" }}:{{ env "NOMAD_PORT_zk1_peer2" }};{{ env "NOMAD_PORT_zk1_client" }}
@@ -384,7 +397,7 @@ EOF
             client = 2181
             peer1 = 2888
             peer2 = 3888
-            httpBind = 8080
+            http = 8080
         }
         volumes = [
           "local/conf:/conf",
@@ -403,7 +416,7 @@ EOF
           port "client" {}
           port "peer1" {}
           port "peer2" {}
-          port "httpBind" {}
+          port "http" {}
         }
       }
       service {
