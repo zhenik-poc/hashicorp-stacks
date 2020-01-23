@@ -33,6 +33,8 @@ EOF
         change_mode = "noop"
         splay = "1m"
         data = <<EOF
+admin.serverPort=8081
+//clientPort=2181
 tickTime=2000
 initLimit=5
 syncLimit=2
@@ -95,12 +97,12 @@ EOF
       config {
         image = "zookeeper:3.5.5"
         labels { group = "zk-docker" }
-        network_mode = "host"
+//        network_mode = "host"
         port_map {
             client = 2181
             peer1 = 2888
             peer2 = 3888
-            http = 8080
+            http = 8081
         }
         volumes = [
           "local/conf:/conf",
@@ -207,6 +209,8 @@ EOF
         change_mode = "noop"
         splay = "1m"
         data = <<EOF
+admin.serverPort=8082
+//clientPort=2182
 tickTime=2000
 initLimit=5
 syncLimit=2
@@ -269,12 +273,12 @@ EOF
         labels {
           group = "zk-docker"
         }
-        network_mode = "host"
+//        network_mode = "host"
         port_map {
           client = 2181
           peer1 = 2888
           peer2 = 3888
-          http = 8080
+          http = 8082
         }
         volumes = [
           "local/conf:/conf",
@@ -330,6 +334,8 @@ EOF
         change_mode = "noop"
         splay = "1m"
         data = <<EOF
+admin.serverPort=8083
+//clientPort=2183
 tickTime=2000
 initLimit=5
 syncLimit=2
@@ -392,12 +398,12 @@ EOF
         labels {
             group = "zk-docker"
         }
-        network_mode = "host"
+//        network_mode = "host"
         port_map {
             client = 2181
             peer1 = 2888
             peer2 = 3888
-            http = 8080
+            http = 8083
         }
         volumes = [
           "local/conf:/conf",
