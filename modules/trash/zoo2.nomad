@@ -1,20 +1,23 @@
-job "zookeeper-cluster" {
-  datacenters = ["dc1"]
+job "kafka-zookeeper-cluster" {
+    datacenters = ["dc1"]
+//  datacenters = ["blue"]
   type = "service"
-  update { max_parallel = 1 }
+  update {
+    max_parallel = 1
+  }
 
   group "zk" {
     count = 1
     restart {
       attempts = 2
       interval = "5m"
-      delay    = "25s"
-      mode     = "delay"
+      delay = "25s"
+      mode = "delay"
     }
     ephemeral_disk {
       migrate = true
-      size    = "500"
-      sticky  = true
+      size = "500"
+      sticky = true
     }
 
     task "zk1" {
@@ -94,7 +97,9 @@ EOF
       }
       config {
         image = "zookeeper:3.5.5"
-        labels { group = "zk-docker" }
+        labels {
+          group = "zk-docker"
+        }
         network_mode = "host"
         port_map {
           client = 2181
@@ -108,16 +113,26 @@ EOF
           "local/logs:/logs"
         ]
       }
-      env { ZOO_LOG4J_PROP="INFO,CONSOLE" }
+      env {
+        ZOO_LOG4J_PROP = "INFO,CONSOLE"
+      }
       resources {
         cpu = 100
         memory = 128
         network {
           mbits = 10
-          port "client" {}
-          port "peer1" {}
-          port "peer2" {}
-          port "http" {}
+          port "client" {
+            static = 2181
+          }
+          port "peer1" {
+            static = 2888
+          }
+          port "peer2" {
+            static = 3888
+          }
+          port "http" {
+            static = 8080
+          }
         }
       }
       service {
@@ -130,7 +145,7 @@ EOF
           type = "http"
           path = "/commands"
           interval = "10s"
-          timeout  = "2s"
+          timeout = "2s"
         }
       }
       service {
@@ -142,42 +157,67 @@ EOF
           type = "script"
           name = "status"
           command = "/bin/bash"
-          args = ["-c", "/apache-zookeeper-3.5.5-bin/bin/zkServer.sh status"]
+          args = [
+            "-c",
+            "/apache-zookeeper-3.5.5-bin/bin/zkServer.sh status"]
           interval = "25s"
-          timeout  = "20s"
+          timeout = "20s"
         }
         check {
           type = "script"
           name = "ruok"
           command = "/bin/bash"
-          args = ["-c", "echo ruok | nc $NOMAD_IP_client $NOMAD_HOST_PORT_client"]
+          args = [
+            "-c",
+            "echo ruok | nc $NOMAD_IP_client $NOMAD_HOST_PORT_client"]
           interval = "25s"
-          timeout  = "20s"
+          timeout = "20s"
         }
         check {
           type = "script"
           name = "stat"
           command = "/bin/bash"
-          args = ["-c", "echo stat | nc $NOMAD_IP_client $NOMAD_HOST_PORT_client"]
+          args = [
+            "-c",
+            "echo stat | nc $NOMAD_IP_client $NOMAD_HOST_PORT_client"]
           interval = "25s"
-          timeout  = "20s"
+          timeout = "20s"
         }
       }
     }
     task "ka1" {
       driver = "docker"
       config {
-        image              = "confluentinc/cp-kafka:5.3.1"
+        hostname = "kafka1"
+        image = "confluentinc/cp-kafka:5.3.1"
+        network_mode = "host"
 
       }
-      // dynamic env
-      template {
-        data = <<EOF
-KAFKA_ZOOKEEPER_CONNECT = ""
-KAFKA_BROKER_ID = "{{ env "NOMAD_ALLOC_INDEX" | parseInt | add 1 }}"
-EOF
-        destination = "secrets/file.env"
-        env = true
+      env {
+        KAFKA_BROKER_ID = 1
+        KAFKA_ZOOKEEPER_CONNECT = "${NOMAD_ADDR_zk1_client}"
+        KAFKA_LISTENERS = "LISTENER_DOCKER://${NOMAD_IP_kafka}:${NOMAD_HOST_PORT_kafka}"
+        KAFKA_ADVERTISED_LISTENERS = "LISTENER_DOCKER://${NOMAD_IP_kafka}:${NOMAD_HOST_PORT_kafka}"
+        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP = "LISTENER_DOCKER:PLAINTEXT"
+        KAFKA_INTER_BROKER_LISTENER_NAME = "LISTENER_DOCKER"
+        KAFKA_LOG4J_LOGGERS = "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
+        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR = 1
+      }
+      resources {
+        cpu = 1500
+        memory = 2048
+
+        network {
+          port "kafka" {
+            static = 9092
+          }
+        }
+      }
+      service {
+        name = "kafka"
+        tags = [
+          "kafka"]
+        port = "kafka"
       }
     }
 
