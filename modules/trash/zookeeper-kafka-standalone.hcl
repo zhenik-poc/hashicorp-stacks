@@ -8,7 +8,7 @@ job "kafka-zookeeper" {
   group "standalone" {
     count = 1
     restart {
-      attempts = 2
+      attempts = 5
       interval = "5m"
       delay = "25s"
       mode = "delay"
@@ -213,6 +213,39 @@ EOF
           "kafka"
         ]
         port = "kafka"
+      }
+    }
+    task "sr1" {
+      driver = "docker"
+      config {
+        image = "confluentinc/cp-schema-registry:5.3.1"
+        network_mode = "host"
+      }
+      env {
+        SCHEMA_REGISTRY_HOST_NAME = "${NOMAD_IP_http}"
+        SCHEMA_REGISTRY_LISTENERS = "http://${NOMAD_ADDR_http}"
+        SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL = "${NOMAD_ADDR_zk1_client}"
+        SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS = "PLAINTEXT://${NOMAD_ADDR_ka1_kafka}"
+      }
+      resources {
+        network {
+          port "http" {
+            static = 8081
+          }
+        }
+      }
+      service {
+        port = "http"
+        tags = [
+          "schema-registry"
+        ]
+        check {
+          name = "check http service"
+          type = "http"
+          path = "/subjects"
+          interval = "10s"
+          timeout = "2s"
+        }
       }
     }
 
