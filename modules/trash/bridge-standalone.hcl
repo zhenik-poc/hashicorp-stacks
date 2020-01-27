@@ -94,6 +94,7 @@ EOF
       }
       config {
         image = "zookeeper:3.5.5"
+        hostname = "zookeeper1"
         port_map {
           client = 2181
           peer1 = 2888
@@ -122,6 +123,7 @@ EOF
       }
       service {
         port = "http"
+        address_mode = "driver"
         tags = [
           "zookeeper-client-http"
         ]
@@ -135,6 +137,7 @@ EOF
       }
       service {
         port = "client"
+        address_mode = "driver"
         tags = [
           "zookeeper-client"
         ]
@@ -154,7 +157,7 @@ EOF
           command = "/bin/bash"
           args = [
             "-c",
-            "echo ruok | nc $NOMAD_IP_client $NOMAD_HOST_PORT_client"]
+            "echo ruok | nc $HOSTNAME $NOMAD_HOST_PORT_client"]
           interval = "25s"
           timeout = "20s"
         }
@@ -164,7 +167,7 @@ EOF
           command = "/bin/bash"
           args = [
             "-c",
-            "echo stat | nc $NOMAD_IP_client $NOMAD_HOST_PORT_client"]
+            "echo stat | nc $HOSTNAME $NOMAD_HOST_PORT_client"]
           interval = "25s"
           timeout = "20s"
         }
@@ -174,13 +177,16 @@ EOF
       driver = "docker"
       config {
         hostname = "kafka1"
-        image = "confluentinc/cp-kafka:5.3.1"
+//        image = "confluentinc/cp-kafka:5.3.1"
+//         DNS 172.17.0.1:53
+        image = "zhenik/sleep:2.0"
         port_map {
           kafka = 9092
         }
       }
 
       env {
+        SLEEP_TIME = 40000
         KAFKA_BROKER_ID = 1
         KAFKA_ZOOKEEPER_CONNECT = "${NOMAD_ADDR_zk1_client}"
         KAFKA_LISTENERS = "PLAINTEXT://${NOMAD_IP_kafka}:${NOMAD_HOST_PORT_kafka}"
