@@ -5,19 +5,29 @@ job "kafka-zookeeper" {
     max_parallel = 1
   }
 
-  group "standalone" {
-    count = 1
-    restart {
-      attempts = 5
-      interval = "5m"
-      delay = "25s"
-      mode = "delay"
+  group "zookeeper" {
+    network {
+      mode = "bridge"
     }
-    ephemeral_disk {
-      migrate = true
-      size = "500"
-      sticky = true
+    service {
+      name = "count-api"
+      port = "9001"
+
+      connect {
+        sidecar_service {}
+      }
     }
+//    restart {
+//      attempts = 5
+//      interval = "5m"
+//      delay = "25s"
+//      mode = "delay"
+//    }
+//    ephemeral_disk {
+//      migrate = true
+//      size = "500"
+//      sticky = true
+//    }
 
     task "zk1" {
       driver = "docker"

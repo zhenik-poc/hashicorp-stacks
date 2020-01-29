@@ -26,7 +26,7 @@ consul:
 
 .PHONY: nomad
 nomad:
-	sudo nomad agent -dev -bind=${HOST_DOCKER} -network-interface=${NETWORK_INTERFACE} -consul-address=${HOST_DOCKER}:8500
+	sudo nomad agent -dev-connect -bind=${HOST_DOCKER} -network-interface=${NETWORK_INTERFACE} -consul-address=${HOST_DOCKER}:8500
 
 .PHONY: vault
 vault:
