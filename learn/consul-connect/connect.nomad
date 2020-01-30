@@ -44,7 +44,7 @@ job "countdash" {
           proxy {
             upstreams {
               destination_name = "count-api"
-              local_bind_port  = 8080
+//              local_bind_port  = 8080
             }
           }
         }
