@@ -5,9 +5,24 @@ job "kafka-zookeeper" {
   group "zookeeper" {
     network {
       mode = "bridge"
+      // expose admin panel
+      port "http" {
+        to = 8080
+      }
     }
     service {
-      name = "prox-zookeeper"
+      name = "zookeeper-http"
+      port = "http"
+      check {
+        type     = "http"
+        path     = "/commands"
+        interval = "30s"
+        timeout  = "5s"
+      }
+    }
+    service {
+      name = "zookeeper-client-proxy"
+      // make available communication for other containers to zookeeper via proxy
       port = "2181"
       connect {
         sidecar_service {}
@@ -33,6 +48,7 @@ tickTime=2000
 initLimit=5
 4lw.commands.whitelist=*
 dataDir=/data
+clientPort=2181
 EOF
       }
       //logger appender
@@ -43,10 +59,10 @@ EOF
 # Define some default values that can be overridden by system properties
 zookeeper.root.logger=INFO, CONSOLE, ROLLINGFILE
 zookeeper.console.threshold=INFO
-zookeeper.log.dir=/zookeeper/log
+zookeeper.log.dir=local/logs
 zookeeper.log.file=zookeeper.log
 zookeeper.log.threshold=INFO
-zookeeper.tracelog.dir=/zookeeper/log
+zookeeper.tracelog.dir=local/logs
 zookeeper.tracelog.file=zookeeper_trace.log
 
 # ZooKeeper Logging Configuration
