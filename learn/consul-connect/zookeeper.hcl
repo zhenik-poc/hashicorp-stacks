@@ -68,11 +68,11 @@ EOF
       }
       config {
         image = "zookeeper:3.5.5"
-        volumes = [
-          "local/conf:/conf",
-          "local/data:/data",
-          "local/logs:/logs"
-        ]
+//        volumes = [
+//          "local/conf:/conf",
+//          "local/data:/data",
+//          "local/logs:/logs"
+//        ]
       }
     }
 

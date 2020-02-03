@@ -53,7 +53,6 @@ job "kafka" {
       connect {
         sidecar_service {
           proxy {
-            protocol = "tcp"
             upstreams {
               local_bind_port = 2181
               destination_name = "zookeeper-api"
