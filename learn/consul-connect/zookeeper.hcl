@@ -1,45 +1,14 @@
-job "kafka-zookeeper" {
+job "zookeeper" {
   datacenters = ["dc1"]
   type = "service"
 
-  group "zookeeper" {
-    network {
-      mode = "bridge"
-      // expose admin panel
-      port "http" {
-        to = 8080
-      }
-      port "client" {
-        to = 2181
-      }
-      // all peers port should be open https://stackoverflow.com/questions/30308727/zookeeper-keeps-getting-the-warn-caught-end-of-stream-exception
-      port "peer1" {
-        to = 2888
-      }
-      port "peer2" {
-        to = 3888
-      }
-    }
-    service {
-      name = "zookeeper-http"
-      port = "http"
-      check {
-        type     = "http"
-        path     = "/commands"
-        interval = "30s"
-        timeout  = "5s"
-      }
-    }
-    service {
-      name = "zookeeper-client-proxy"
-      // make available communication for other containers to zookeeper via proxy
-      port = "client"
-      connect {
-        sidecar_service {}
-      }
-    }
+  constraint {
+    attribute = "${attr.kernel.name}"
+    value     = "linux"
+  }
 
-    task "zk1" {
+  group "standalone" {
+    task "node" {
       driver = "docker"
       //ID
       template {
@@ -106,46 +75,41 @@ EOF
         ]
       }
     }
+
+    network {
+      mode = "bridge"
+      // expose admin panel
+      port "http" {
+        to = 8080
+      }
+      port "client" {
+        to = 2181
+      }
+      // all peers port should be open https://stackoverflow.com/questions/30308727/zookeeper-keeps-getting-the-warn-caught-end-of-stream-exception
+      port "peer1" {
+        to = 2888
+      }
+      port "peer2" {
+        to = 3888
+      }
+    }
+    service {
+      name = "zookeeper-http"
+      port = "http"
+      check {
+        type     = "http"
+        path     = "/commands"
+        interval = "30s"
+        timeout  = "5s"
+      }
+    }
+    service {
+      name = "zookeeper-api"
+      // make available communication for other containers to zookeeper via proxy
+      port = "client"
+      connect {
+        sidecar_service {}
+      }
+    }
   }
-//  group "kafka" {
-//    network {
-//      mode ="bridge"
-//      port "client" {
-//        to = 9092
-//      }
-//    }
-//    service {
-//      name = "kafka-client"
-//      port = "client"
-//    }
-//    service {
-//      connect {
-//        sidecar_service {
-//          proxy {
-//            upstreams {
-//              local_bind_port = 8081
-//              destination_name = "zookeeper-client-proxy"
-//            }
-//          }
-//        }
-//      }
-//    }
-//
-//    task "ka1" {
-//      driver = "docker"
-//      config {
-//        image = "confluentinc/cp-kafka:5.3.1"
-////        image = "zhenik/sleep:2.0"
-//      }
-//      env {
-//        SLEEP_TIME = 40000
-//        KAFKA_BROKER_ID = 1
-//        KAFKA_ZOOKEEPER_CONNECT = "${NOMAD_UPSTREAM_ADDR_zookeeper_client_proxy}"
-//        KAFKA_LOG4J_LOGGERS = "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
-//        KAFKA_LISTENERS = "PLAINTEXT://127.0.0.1:9092"
-//        KAFKA_ADVERTISED_LISTENERS = "PLAINTEXT://127.0.0.1:9092"
-//        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP = "PLAINTEXT:PLAINTEXT"
-//      }
-//    }
-//  }
 }
