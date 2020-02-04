@@ -18,6 +18,7 @@ all:
 exports:
 	export NOMAD_ADDR=http://${HOST_DOCKER}:4646
 
+# `consul agent -dev` enabled connect integration
 .PHONY: consul
 consul:
 	sudo consul agent -dev -client=${HOST_DOCKER} -dns-port=53
