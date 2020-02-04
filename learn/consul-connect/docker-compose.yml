@@ -9,8 +9,8 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
 #      KAFKA_ZOOKEEPER_CONNECT: "zoo1:2181"
-      KAFKA_ZOOKEEPER_CONNECT: "172.17.0.1:20882" # NOMAD_HOST_PORT_client=20882 -> works fine
-#      KAFKA_ZOOKEEPER_CONNECT: "172.17.0.1:25745" # NOMAD_PORT_connect_proxy_zookeeper_client_proxy=25745
+      KAFKA_ZOOKEEPER_CONNECT: "172.17.0.1:26736" # NOMAD_HOST_PORT_client=20882 -> works fine
+#      KAFKA_ZOOKEEPER_CONNECT: "172.17.0.1:25745" # NOMAD_PORT_connect_proxy_zoo=25745
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_LOG4J_LOGGERS: "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"

@@ -27,6 +27,7 @@ tickTime=2000
 initLimit=5
 4lw.commands.whitelist=*
 dataDir=/data
+maxClientCnxns=60
 clientPort=2181
 EOF
       }
@@ -78,14 +79,14 @@ EOF
 
     network {
       mode = "bridge"
-      // expose admin panel
+      // admin panel 8080
       port "http" {
         to = 8080
       }
       port "client" {
         to = 2181
       }
-      // all peers port should be open https://stackoverflow.com/questions/30308727/zookeeper-keeps-getting-the-warn-caught-end-of-stream-exception
+      // all peer's ports should be also open https://stackoverflow.com/questions/30308727/zookeeper-keeps-getting-the-warn-caught-end-of-stream-exception
       port "peer1" {
         to = 2888
       }
@@ -94,6 +95,7 @@ EOF
       }
     }
     service {
+      // expose admin panel
       name = "zookeeper-http"
       port = "http"
       check {
@@ -104,9 +106,11 @@ EOF
       }
     }
     service {
-      name = "zookeeper-api"
+      // There are will be two services registered
+      // `zoo` and `zoo-sidecar-proxy`
+      name = "zoo"
       // make available communication for other containers to zookeeper via proxy
-      port = "client"
+      port = "client" // port 2181
       connect {
         sidecar_service {}
       }
