@@ -5,13 +5,11 @@ NETWORK_INTERFACE_MAC := en0
 NETWORK_INTERFACE_LINUX := docker0
 NETWORK_INTERFACE := ${NETWORK_INTERFACE_LINUX}
 
-X_TEST_ZOOKEEPER_JOB := ./modules/zookeeper/containers/zookeeper_unique_tasks.nomad
-#X_TEST_ZOOKEEPER_JOB := ./modules/zookeeper/containers/zookeeper_bridge.nomad
-#X_TEST_ZOOKEEPER_JOB := ./modules/zookeeper/containers/zookeeper_unique_tasks_bridge.nomad
-X_TEST_ZOOKEEPER_JOB_NAME := zookeeper-cluster
+X_TEST_ZOOKEEPER_JOB := ./learn/consul-connect/zookeeper.hcl
+X_TEST_ZOOKEEPER_JOB_NAME := zookeeper
 
-X_TEST_KAFKA_JOB := ./modules/kafka/containers/kafka_1_broker.nomad
-X_TEST_KAFKA_JOB_NAME := kafka-cluster
+X_TEST_KAFKA_JOB := ./learn/consul-connect/kafka.hcl
+X_TEST_KAFKA_JOB_NAME := kafka
 
 
 .PHONY: all
