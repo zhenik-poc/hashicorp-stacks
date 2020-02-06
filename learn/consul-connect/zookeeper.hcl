@@ -81,44 +81,19 @@ EOF
       env {
         ZOOKEEPER_CLIENT_PORT = 2181
         ZOOKEEPER_SERVER_ID = 1
+        KAFKA_OPTS = "-Dzookeeper.4lw.commands.whitelist=*"
       }
     }
 
     network {
       mode = "bridge"
-      // admin panel 8080
-//      port "http" {
-//        to = 8080
-//      }
-//      port "client" {
-//        #to = -1
-//        to = 2181
-//      }
-      // all peer's ports should be also open https://stackoverflow.com/questions/30308727/zookeeper-keeps-getting-the-warn-caught-end-of-stream-exception
-//      port "peer1" {
-//        to = 2888
-//      }
-//      port "peer2" {
-//        to = 3888
-//      }
     }
-//    service {
-//      // expose admin panel
-//      name = "zookeeper-http"
-//      port = "http"
-//      check {
-//        type     = "http"
-//        path     = "/commands"
-//        interval = "30s"
-//        timeout  = "5s"
-//      }
-//    }
     service {
       // There are will be two services registered
       // `zoo` and `zoo-sidecar-proxy`
       name = "zoo"
       // make available communication for other containers to zookeeper via proxy
-      port = 2181 // port 2181
+      port = 2181
       connect {
         sidecar_service {}
         sidecar_task {

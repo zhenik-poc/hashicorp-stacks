@@ -14,26 +14,27 @@ job "kafka" {
         image = "confluentinc/cp-kafka:5.3.1"
       }
       env {
-        SLEEP_TIME = 40000 // only for investigation with image => zhenik/sleep:2.0
         KAFKA_BROKER_ID = 1
-        //KAFKA_ZOOKEEPER_CONNECT = "${NOMAD_UPSTREAM_ADDR_zoo}"
         KAFKA_ZOOKEEPER_CONNECT = "localhost:9191"
         KAFKA_LOG4J_LOGGERS = "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
         KAFKA_LISTENERS = "PLAINTEXT://127.0.0.1:9092"
         KAFKA_ADVERTISED_LISTENERS = "PLAINTEXT://127.0.0.1:9092"
         KAFKA_LISTENER_SECURITY_PROTOCOL_MAP = "PLAINTEXT:PLAINTEXT"
+        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR = 1
+      }
+      resources {
+        cpu    = 1000 # MHz
+        memory = 1024 # MB // otherwise, Kafka will fail with - OOMKilled 137
       }
     }
 
     network {
       mode = "bridge"
-//      port "client" {
-//        to = 9092
-//      }
     }
 
     service {
       port = 9092
+      name = "kafka-bootstrap-server"
       connect {
         sidecar_service {
           proxy {
@@ -43,6 +44,7 @@ job "kafka" {
             }
           }
         }
+        // for debug purposes, rm for prod
         sidecar_task {
           driver = "docker"
           config {
@@ -64,7 +66,6 @@ job "kafka" {
             cpu    = 250 # MHz
             memory = 128 # MB
           }
-
           shutdown_delay = "5s"
         }
       }
