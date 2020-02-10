@@ -18,7 +18,6 @@ job "zookeeper" {
 1
 EOF
       }
-//      #clientPort={{ env "NOMAD_PORT_client" }}
       template {
         destination = "local/conf/zoo.cfg"
         change_mode = "noop"
@@ -33,50 +32,13 @@ clientPort=2181
 server.1=127.0.0.1:2888:3888
 EOF
       }
-      //logger appender
-//      template {
-//        destination = "local/conf/log4j.properties"
-//        change_mode = "noop"
-//        data = <<EOF
-//# Define some default values that can be overridden by system properties
-//zookeeper.root.logger=DEBUG, INFO, CONSOLE, ROLLINGFILE
-//zookeeper.console.threshold=DEBUG
-//zookeeper.log.dir=local/logs
-//zookeeper.log.file=zookeeper.log
-//zookeeper.log.threshold=INFO
-//zookeeper.tracelog.dir=local/logs
-//zookeeper.tracelog.file=zookeeper_trace.log
-//
-//# ZooKeeper Logging Configuration
-//log4j.rootLogger=${zookeeper.root.logger}
-//
-//# Log INFO level and above messages to the console
-//log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender
-//log4j.appender.CONSOLE.Threshold=${zookeeper.console.threshold}
-//log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout
-//log4j.appender.CONSOLE.layout.ConversionPattern=%d{ISO8601} [myid:%X{myid}] - %-5p [%t:%C{1}@%L] - %m%n
-//
-//# Add ROLLINGFILE to rootLogger to get log file output
-//log4j.appender.ROLLINGFILE=org.apache.log4j.RollingFileAppender
-//log4j.appender.ROLLINGFILE.Threshold=${zookeeper.log.threshold}
-//log4j.appender.ROLLINGFILE.File=${zookeeper.log.dir}/${zookeeper.log.file}
-//
-//# Max log file size of 10MB
-//log4j.appender.ROLLINGFILE.MaxFileSize=10MB
-//# uncomment the next line to limit number of backup files
-//log4j.appender.ROLLINGFILE.MaxBackupIndex=5
-//log4j.appender.ROLLINGFILE.layout=org.apache.log4j.PatternLayout
-//log4j.appender.ROLLINGFILE.layout.ConversionPattern=%d{ISO8601} [myid:%X{myid}] - %-5p [%t:%C{1}@%L] - %m%n
-//EOF
-//      }
       config {
         image = "confluentinc/cp-zookeeper:5.3.1"
-//        image = "zookeeper:3.5.5"
-//        volumes = [
-//          "local/conf:/conf",
-//          "local/data:/data",
-//          "local/logs:/logs"
-//        ]
+        volumes = [
+          "local/conf:/conf",
+          "local/data:/data",
+          "local/logs:/logs"
+        ]
       }
       env {
         ZOOKEEPER_CLIENT_PORT = 2181
@@ -91,7 +53,7 @@ EOF
     service {
       // There are will be two services registered
       // `zoo` and `zoo-sidecar-proxy`
-      name = "zoo"
+      name = "zookeeper-client"
       // make available communication for other containers to zookeeper via proxy
       port = 2181
       connect {

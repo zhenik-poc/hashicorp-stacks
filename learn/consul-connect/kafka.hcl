@@ -39,8 +39,8 @@ job "kafka" {
         sidecar_service {
           proxy {
             upstreams {
-              destination_name = "zoo"
-              local_bind_port = 9191
+              destination_name = "zookeeper-client"
+              local_bind_port = 9191 // any open available port
             }
           }
         }
@@ -53,7 +53,7 @@ job "kafka" {
               "-c",
               "${NOMAD_SECRETS_DIR}/envoy_bootstrap.json",
               "-l",
-              "debug"
+              "debug" // debug lvl
             ]
           }
 
