@@ -1,0 +1,19 @@
+http:
+  routers:
+    router1:
+      rule: Host(`localhost`)
+      service: service1
+      entryPoints:
+        - web
+    router2:
+      rule: Host(`test.local`)
+      service: service-test
+  services:
+    service1:
+      loadBalancer:
+        servers:
+          - url: http://httpbin.org
+    service-test:
+      loadBalancer:
+        servers:
+          - url: http://test:3000

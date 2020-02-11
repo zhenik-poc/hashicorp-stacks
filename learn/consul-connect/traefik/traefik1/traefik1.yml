@@ -1,0 +1,38 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: true
+serversTransport:
+  insecureSkipVerify: true
+#  rootCAs:
+#    - uuid1
+#    - uuid1
+  maxIdleConnsPerHost: 42
+  forwardingTimeouts:
+    dialTimeout: 42
+    responseHeaderTimeout: 42
+    idleConnTimeout: 42
+entryPoints:
+  uuidEntry0:
+    address: uuid1:3000
+providers:
+  providersThrottleDuration: 42
+  file:
+#    directory: /etc/traefik
+    watch: true
+    filename: /etc/traefik/traefik.yml
+    debugLogGeneratedTemplate: true
+api:
+  insecure: true
+  dashboard: true
+  debug: true
+ping:
+  entryPoint: uuid1
+  manualRouting: true
+log:
+  level: uuid1
+  filePath: uuid1
+  format: uuid1
+hostResolver:
+  cnameFlattening: true
+  resolvConfig: uuid1
+  resolvDepth: 42

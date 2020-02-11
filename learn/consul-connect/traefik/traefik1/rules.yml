@@ -1,0 +1,44 @@
+http:
+  services:
+    uuid1:
+      loadBalancer:
+        servers:
+          - url: "http://uuid1:3000/"
+        passHostHeader: true
+#    kong-admin:
+#      loadBalancer:
+#        servers:
+#          - url: "http://127.0.0.1:8001/"
+#        passHostHeader: true
+#    pihole:
+#      loadBalancer:
+#        servers:
+#          - url: "http://127.0.0.1:8002/"
+#        passHostHeader: true
+  routers:
+    uuid1:
+      entryPoints:
+        - web
+#      tls:
+#        certResolver: le
+      service: uuid1
+      rule: hostregexp(`{host:uuid\..+}`)
+#    kong-wildcard:
+#      entryPoints:
+#        - web
+#      tls:
+#        certResolver: le
+#        domains:
+#          - main: "eldri.ch"
+#            sans:
+#              - "*.eldri.ch"
+#      service: kong
+#      rule: hostregexp(`{host:.+\..+}`)
+#      priority: 1
+#    pihole:
+#      entryPoints:
+#        - websecure
+#      tls:
+#        certResolver: le
+#      service: pihole
+#      rule: Host(`pihole.eldri.ch`)

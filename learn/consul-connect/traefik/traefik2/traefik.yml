@@ -1,0 +1,19 @@
+## traefik.yml
+
+# Docker configuration backend
+providers:
+  docker:
+    defaultRule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`)"
+  file:
+    watch: true
+    filename: /etc/traefik/rules.yml
+    debugLogGeneratedTemplate: true
+
+entryPoints:
+  testEntry0:
+    address: http://test:3000
+
+
+# API and dashboard configuration
+api:
+  insecure: true
