@@ -1,0 +1,12 @@
+http:
+  routers:
+    router1:
+      rule: Host(`localhost`)
+      service: service1
+      entryPoints:
+        - web
+  services:
+    service1:
+      loadBalancer:
+        servers:
+          - url: http://httpbin.org

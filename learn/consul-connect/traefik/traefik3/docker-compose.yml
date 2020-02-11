@@ -3,14 +3,14 @@ version: '3.7'
 services:
   traefik:
     image: "traefik:v2.0.4"
-    command:
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --api=true
-      - --providers.docker=true
-      - --providers.docker.exposedbydefault=false
-      - --providers.file.directory=/config/
-      - --global.sendAnonymousUsage=false
+#    command:
+#      - --entrypoints.web.address=:80
+#      - --entrypoints.websecure.address=:443
+#      - --api=true
+#      - --providers.docker=true
+#      - --providers.docker.exposedbydefault=false
+#      - --providers.file.directory=/config/
+#      - --global.sendAnonymousUsage=false
     ports:
       - "80:80"
       - "443:443"
@@ -22,7 +22,8 @@ services:
       - "traefik.http.routers.traefik.entrypoints=web"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./config/:/config/"
+      - "./config/traefik.yml:/etc/traefik/traefik.yml"
+      - "./config/rules.yml:/config/rules.yml"
 
   test:
     image: zhenik/uuid:2.0
