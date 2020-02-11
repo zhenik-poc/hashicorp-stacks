@@ -3,17 +3,10 @@ version: '3.7'
 services:
   traefik:
     image: "traefik:v2.0.4"
-#    command:
-#      - --entrypoints.web.address=:80
-#      - --entrypoints.websecure.address=:443
-#      - --api=true
-#      - --providers.docker=true
-#      - --providers.docker.exposedbydefault=false
-#      - --providers.file.directory=/config/
-#      - --global.sendAnonymousUsage=false
     ports:
       - "80:80"
       - "443:443"
+      - "8888:8888"
     labels:
       - "traefik.enable=true"
       # Dashboard
@@ -27,5 +20,3 @@ services:
 
   test:
     image: zhenik/uuid:2.0
-    ports:
-    - 3333:3000

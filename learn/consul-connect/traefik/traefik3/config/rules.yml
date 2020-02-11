@@ -5,8 +5,17 @@ http:
       service: service1
       entryPoints:
         - web
+    router2:
+      rule: Host(`test.localhost`)
+      service: service2
+      entryPoints:
+        - test
   services:
     service1:
       loadBalancer:
         servers:
           - url: http://httpbin.org
+    service2:
+      loadBalancer:
+        servers:
+          - url: http://test:3000
