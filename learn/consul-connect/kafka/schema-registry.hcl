@@ -13,20 +13,26 @@ job "schema-registry" {
 
       env {
         SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS = "PLAINTEXT://${NOMAD_UPSTREAM_ADDR_kafka_bootstrap_server}"
-        SCHEMA_REGISTRY_LISTENERS = "http://0.0.0.0:8081"
-        SCHEMA_REGISTRY_HOST_NAME = "${HOSTNAME}"
-        SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL = "${NOMAD_UPSTREAM_ADDR_zookeeper_client}"
+        SCHEMA_REGISTRY_LISTENERS = "http://localhost:8081"
+        SCHEMA_REGISTRY_HOST_NAME = "127.0.0.1"
+//        SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL = "${NOMAD_UPSTREAM_ADDR_zookeeper_client}"
 
         SCHEMA_REGISTRY_DEBUG = true
         SLEEP_TIME = 40000
       }
 
       config {
-//        image = "confluentinc/cp-schema-registry:5.3.1"
-        image = "zhenik/sleep:2.0"
+        image = "confluentinc/cp-schema-registry:5.3.1"
+//        image = "zhenik/sleep:2.0"
 //        extra_hosts = [
 //          "127.0.0.1:schema-registry"
 //        ]
+//        args = [
+//          "-c","export SCHEMA_REGISTRY_HOST_NAME=$HOSTNAME;/etc/confluent/docker/run"
+//        ]
+//        command = "sh"
+
+//        command = "cat /etc/hosts"
       }
 
 
@@ -34,12 +40,11 @@ job "schema-registry" {
 
     network {
       mode = "bridge"
-      port "http" {
-        to = 8081
-      }
     }
 
     service {
+      name = "schema-registry"
+      port = 8081
       connect {
         sidecar_service {
           proxy {

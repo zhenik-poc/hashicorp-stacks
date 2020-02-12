@@ -76,3 +76,15 @@ docker run --tty \
                     -f '\nKey (%K bytes): %k\t\nValue (%S bytes): %s\n\Partition: %p\tOffset: %o\n--\n' \
                     -t test2
 ```
+
+### Schema registry issue 
+
+> [SCHEMA_REGISTRY_HOST_NAME](https://docs.confluent.io/current/installation/docker/config-reference.html#required-schema-registry-settings)
+>
+> The hostname advertised in ZooKeeper.
+> This is required if if you are running Schema Registry with multiple nodes. 
+>Hostname is required because it defaults to the Java canonical hostname for the container, which may not always be resolvable in a Docker environment. 
+>Hostname must be resolveable because secondary nodes serve registration requests indirectly by simply forwarding them to the current primary, 
+>and returning the response supplied by the primary. For more information, see the Schema Registry documentation on Single Primary Architecture.
+
+
