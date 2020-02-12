@@ -1,11 +1,18 @@
-## Additional info
+# Consul-connect experiments
+## Why consul connect
+>I. Compare with `host` network
+- everything deployed to 1 host, manual setup communication across nomad clients
+- port collisions (or manual config changes), anyway you should know which ports are already busy
+- no isolation [in and out] (nomad client become one big container)
 
-```bashl
-export NOMAD_ADDR="http://172.17.0.1:4646"
-export CONSUL_HTTP_ADDR="172.17.0.1:8500"
-consul connect proxy -service=nikita -upstream=zoo:9191 -log-level=TRACE
+>II. Compare with `bridge` network
+- bridge network coupled with docker host, everything deployed to 1 host, manual setup communication across nomad clients (example: via overlay networks) 
+- no isolation [in] (communication to containers are available via container IP address assigned by docker hos
 
-consul connect proxy -service=proxy-to-zookeeper -upstream=zoo:2181 -log-level=TRACE
-consul connect proxy -service=proxy-to-kafka -upstream=kafka-bootstrap-server:9092 -log-level=TRACE
-```
+> III. Consul connect
+- transparent deployments to different nomad clients and support for communication across different nomad clients
+- sidecars or native (`make research`)
+- encryption in transit
+- intentions (communication policy control)
+- full isolation for container (has own issues), communication only via proxy
 
