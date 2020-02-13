@@ -1,4 +1,4 @@
-job "echo" {
+job "uuid" {
   datacenters = ["dc1"]
   type = "service"
 
@@ -8,13 +8,13 @@ job "echo" {
       mode = "bridge"
     }
     service {
-      name = "test-api"
+      name = "uuid-api"
       port = 3000
       connect {
         sidecar_service {}
       }
     }
-    task "web" {
+    task "node" {
       driver = "docker"
 
       config {

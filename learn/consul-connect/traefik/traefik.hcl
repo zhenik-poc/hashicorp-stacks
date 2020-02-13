@@ -1,121 +1,99 @@
 job "traefik" {
   datacenters = ["dc1"]
-  type = "service"
+  type        = "service"
 
   group "standalone" {
-    count = 1
-    network {
-      mode ="bridge"
-
-      # by specifying a port here in the network stanza, we're making the port
-      # publically available
-      port "http" {
-        to = 8080
-      }
-      port "https" {
-        to = 443
-      }
-      port "test" {
-        to = 8888
-      }
-
-    }
     service {
-      name = "dashboard"
-      port = "http"
-      check {
-        type     = "http"
-        path     = "/"
-        interval = "30s"
-        timeout  = "5s"
-      }
-    }
-    service {
-      name = "rest"
-      port = "test"
-    }
+      name = "traefik-service"
+      port = 8080
+      tags = ["cgtag"]
 
-    service {
       connect {
         sidecar_service {
           proxy {
             upstreams {
-              local_bind_port = 3000
-              destination_name = "test-api"
+              destination_name  = "nginx-api"
+              local_bind_port   = 80
+            }
+            upstreams {
+              destination_name  = "uuid-api"
+              local_bind_port   = 3000
             }
           }
         }
       }
     }
-
+    network {
+      mode = "bridge"
+    }
     task "node" {
       driver = "docker"
-
       config {
-        image = "traefik:v2.0.4"
+        image = "traefik:v2.1"
+
         volumes = [
           "local/traefik.yml:/etc/traefik/traefik.yml",
-          "local/rules.yml:/config/rules.yml",
+          "local/rules.yml:/etc/traefik/rules.yml",
+          "/var/run/docker.sock:/var/run/docker.sock"
         ]
       }
 
+      // traefik.yml
       template {
-        data = <<EOF
-global:
-  sendAnonymousUsage: false
+        destination     = "local/traefik.yml"
+        data            = <<EOF
+entryPoints:
+  http:
+    address: ":8081"
+  traefik:
+    address: ":8080"
 api:
   insecure: true
   dashboard: true
-  debug: true
-entryPoints:
-  web:
-    address: ":80"
-  websecure:
-    address: ":443"
-  test:
-    address: ":8888"
+log:
+  level: DEBUG
 providers:
-  docker:
-    exposedByDefault: false
   file:
-    watch: true
-    filename: /config/rules.yml
-    debugLogGeneratedTemplate: true
+    filename: /etc/traefik/rules.yml
 EOF
-        left_delimiter  = "{!"
-        right_delimiter = "!}"
-        destination     = "local/traefik.yml"
       }
+      // rules.yml
       template {
-        data = <<EOF
+        destination     = "local/rules.yml"
+        data            = <<EOF
 http:
   routers:
-    router1:
-      rule: Host(`localhost`)
-      service: service1
+    nginx-router:
+      rule: Path(`/nginx`)
+      service: nginx-service
+      middlewares:
+        - remove-path
       entryPoints:
-        - web
-    router2:
-      rule: Host(`test.localhost`)
-      service: service2
+        - http
+    uuid-router:
+      rule: Path(`/uuid`)
+      service: uuid-service
+      middlewares:
+        - remove-path
       entryPoints:
-        - test
+        - http
+
+  middlewares:
+    remove-path:
+      replacePath:
+        path: "/"
+
   services:
-    service1:
+    nginx-service:
       loadBalancer:
         servers:
-          - url: http://httpbin.org
-    service2:
+          - url: "http://{{ env "NOMAD_UPSTREAM_ADDR_nginx_api" }}"
+    uuid-service:
       loadBalancer:
         servers:
-          - url: http://localhost:3000
+          - url: "http://{{ env "NOMAD_UPSTREAM_ADDR_uuid_api" }}"
 EOF
-        left_delimiter  = "{!"
-        right_delimiter = "!}"
-        destination     = "local/rules.yml"
       }
-
-
     }
   }
 }
