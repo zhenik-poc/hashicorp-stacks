@@ -10,6 +10,8 @@ services:
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SERVERS: zoo1:2888:3888;zoo2:2888:3888;zoo3:2888:3888
+    networks:
+      - common
   zoo2:
     image: confluentinc/cp-zookeeper:5.3.1
     environment:
@@ -19,6 +21,8 @@ services:
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SERVERS: zoo1:2888:3888;zoo2:2888:3888;zoo3:2888:3888
+    networks:
+      - common
   zoo3:
     image: confluentinc/cp-zookeeper:5.3.1
     environment:
@@ -28,7 +32,8 @@ services:
       ZOOKEEPER_INIT_LIMIT: 5
       ZOOKEEPER_SYNC_LIMIT: 2
       ZOOKEEPER_SERVERS: zoo1:2888:3888;zoo2:2888:3888;zoo3:2888:3888
-
+    networks:
+      - common
   kafka1:
     image: confluentinc/cp-kafka:5.3.1
     environment:
@@ -44,22 +49,28 @@ services:
       - zoo1
       - zoo2
       - zoo3
-
-  schema-registry:
+    networks:
+      - common
+      - sr-only
+  sr:
     image: confluentinc/cp-schema-registry:5.3.1
-    hostname: schema-registry
-    container_name: schema-registry
     ports:
       - 8081:8081
     environment:
+#      HOSTNAME: localhost
+      SCHEMA_REGISTRY_HOST_NAME: localhost
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081 # default 8081
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka1:29092"
+    #      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zoo1:2181,zoo2:2181,zoo3:2181"
 #      SCHEMA_REGISTRY_HOST_NAME: schema-registry
-#      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
-#      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: "zoo1:2181,zoo2:2181,zoo3:2181"
-#      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka1:29092"
-      SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zoo1:2181,zoo2:2181,zoo3:2181'
+#      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zoo1:2181,zoo2:2181,zoo3:2181'
     depends_on:
       - zoo1
       - zoo2
       - zoo3
       - kafka1
+    networks:
+      - sr-only
+networks:
+  common:
+  sr-only:
