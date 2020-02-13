@@ -49,6 +49,12 @@ EOF
 
     network {
       mode = "bridge"
+      port "peer1" {
+        to = 2888
+      }
+      port "peer2" {
+        to = 3888
+      }
     }
     service {
       // There are will be two services registered
