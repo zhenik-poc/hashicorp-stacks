@@ -10,40 +10,29 @@ job "zookeeper" {
   group "standalone" {
     task "node" {
       driver = "docker"
-      //ID
+      // full set of env for cp-zookeeper
+      // https://github.com/confluentinc/cp-docker-images/blob/5.3.1-post/debian/zookeeper/include/etc/confluent/docker/zookeeper.properties.template
       template {
-        destination = "local/data/myid"
+        destination = "local/data/.envs"
         change_mode = "noop"
+        env = true
         data = <<EOF
-1
-EOF
-      }
-      template {
-        destination = "local/conf/zoo.cfg"
-        change_mode = "noop"
-        splay = "1m"
-        data = <<EOF
-tickTime=2000
-initLimit=5
-4lw.commands.whitelist=*
-dataDir=/data
-maxClientCnxns=60
-clientPort=2181
-server.1=127.0.0.1:2888:3888
+ZOOKEEPER_SERVER_ID={{ env "NOMAD_ALLOC_INDEX" | parseInt | add 1 }}
+ZOOKEEPER_CLIENT_PORT=2181
+KAFKA_OPTS="-Dzookeeper.4lw.commands.whitelist=*"
+ZOOKEEPER_SERVERS=localhost:2888:3888
+ZOOKEEPER_TICK_TIME=2000
+ZOOKEEPER_INIT_LIMIT=5
+ZOOKEEPER_SYNC_LIMIT=2
+ZOOKEEPER_MAX_CLIENT_CNXNS=60
 EOF
       }
       config {
         image = "confluentinc/cp-zookeeper:5.3.1"
         volumes = [
-          "local/conf:/conf",
-          "local/data:/data",
-          "local/logs:/logs"
+          "local/data:/var/lib/zookeeper/data",
+          "local/logs:/var/lib/zookeeper/log"
         ]
-      }
-      env {
-        ZOOKEEPER_CLIENT_PORT = 2181
-        ZOOKEEPER_SERVER_ID = 1
-        KAFKA_OPTS = "-Dzookeeper.4lw.commands.whitelist=*"
       }
     }
 
@@ -88,6 +77,16 @@ EOF
           shutdown_delay = "5s"
         }
       }
+//      check {
+//        type = "script"
+//        name = "ruok"
+//        command = "/bin/bash"
+//        args = [
+//          "-c",
+//          "echo ruok | nc locahost $$ZOOKEEPER_CLIENT_PORT"]
+//        interval = "25s"
+//        timeout = "20s"
+//      }
     }
   }
 }
