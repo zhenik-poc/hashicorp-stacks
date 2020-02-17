@@ -1,15 +1,15 @@
 http:
   routers:
     router1:
-      rule: Host(`localhost`)
+      rule: "Host(`localhost`)"
       service: service1
       entryPoints:
         - web
     router2:
-      rule: Path(`/`)
+      rule: "Path(`/t`)"
       service: service2
-#      middleware:
-#        - remove-path
+      middlewares:
+        - "remove-path"
       entryPoints:
         - test-entry
   middlewares:
