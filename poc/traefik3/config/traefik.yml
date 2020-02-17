@@ -9,6 +9,8 @@ api:
 entryPoints:
   web:
     address: ":80"
+  shara:
+    address: ":8888"
   websecure:
     address: ":443"
   test-entry:

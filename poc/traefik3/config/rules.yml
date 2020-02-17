@@ -12,6 +12,7 @@ http:
         - "remove-path"
       entryPoints:
         - test-entry
+        - shara
   middlewares:
     remove-path:
       replacePath:
