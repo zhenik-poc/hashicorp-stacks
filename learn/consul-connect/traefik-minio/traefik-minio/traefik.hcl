@@ -1,6 +1,6 @@
 job "k-router" {
 //  datacenters = ["dc1"]
-  region = "public-blue"
+//  region = "public-blue"
   datacenters = ["blue"]
   type        = "service"
 
@@ -8,14 +8,13 @@ job "k-router" {
     task "traefik" {
       driver = "docker"
       config {
-        image = "traefik:v2.1"
+        image = "traefik:v2.1.4"
         volumes = [
           "local/traefik.yml:/etc/traefik/traefik.yml",
           "local/minio.yml:/etc/traefik/minio.yml"
         ]
         port_map {
-          http = 8080
-          https = 8081
+          dashboard = 8080
         }
       }
 
@@ -42,13 +41,11 @@ EOF
         data          = <<EOF
 http:
   routers:
-    minio-router:
-      rule: Path(`/minio`)
-      service: minio-service
-      middlewares:
-        - remove-path
-      entryPoints:
-        - http
+//    minio-router:
+//      rule: Path(`/minio/test`)
+//      service: minio-service
+//      entryPoints:
+//        - http
 
   middlewares:
     remove-path:
@@ -66,8 +63,8 @@ EOF
         cpu    = 100
         memory = 128
         network {
-          port "http" { to = 8080 }
-          port "api" { to = 8081 }
+          port "dashboard" { }
+//          port "api" { to = 8081 }
         }
       }
 
@@ -80,7 +77,7 @@ EOF
         check {
           name     = "alive"
           type     = "tcp"
-          port     = "http"
+          port     = "dashboard"
           interval = "10s"
           timeout  = "2s"
         }
