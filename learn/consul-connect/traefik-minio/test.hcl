@@ -1,43 +1,24 @@
-job "k39582-router" {
+job "k-router" {
   datacenters = ["blue"]
   type        = "service"
-
   group "traefik" {
-    count = 1
 
     task "traefik" {
       driver = "docker"
-
       config {
-        image = "traefik:v2.1"
-
+        image   = "traefik:v2.1.4"
         volumes = [
           "local/traefik.yml:/etc/traefik/traefik.yml",
           "local/minio.yml:/etc/traefik/minio.yml"
         ]
-      }
-      resources {
-        cpu    = 100
-        memory = 128
-
-        network {
-          mbits = 10
-
-          port "api" {
-            static = 8080
-          }
-
-          port "dashboard" {
-            static = 8081
-          }
-          port "minio" {
-            static = 9000
-          }
+        port_map {
+          minio       = 9000
+          ui          = 8081
         }
       }
-
       template {
-        data = <<EOF
+        destination = "/local/traefik.yml"
+        data        = <<EOF
 entryPoints:
   http:
     address: ":8080"
@@ -54,69 +35,33 @@ providers:
   file:
     filename: "/etc/traefik/minio.yml"
 EOF
-
-        left_delimiter  = "{!"
-        right_delimiter = "!}"
-        destination     = "/local/traefik.yml"
       }
-//      middlewares:
-//      - remove-path
-//      - minio-redirects
-//      rule: "Path(`/minio-service`)"
       template {
-        data = <<EOF
+        destination = "/local/minio.yml"
+        data        = <<EOF
 http:
   routers:
     router-to-minio:
       entryPoints:
         - "minio"
       service: "minio-service"
-      middlewares:
-        - minio-redirects
-      rule: "Path(`/minio`)"
-  middlewares:
-    minio-redirects:
-      replacePath:
-        path: "/minio"
-    testHeader:
-      headers:
-        accessControlAllowOrigin: "origin-list-or-null"
-        accessControlMaxAge: 100
-        addVaryHeader: true
-
+      rule: "PathPrefix(`/minio`)"
   services:
     minio-service:
       loadBalancer:
         servers:
           - url: "http://dataprep-plattform-blue.minio.service.blue.intern.minerva.loc:9000"
-
-
-
 EOF
-
-        left_delimiter  = "{!"
-        right_delimiter = "!}"
-        destination = "/local/minio.yml"
       }
 
-      service {
-        name = "traefik"
-        tags = [
-          "test-traefik",
-          "fni-test",
-          "fni-fni"]
-
-        check {
-          name = "alive"
-          type = "tcp"
-          port = "api"
-          interval = "10s"
-          timeout = "2s"
+      resources {
+        cpu     = 100
+        memory  = 128
+        network {
+          port "minio" {}
+          port "ui" {}
         }
-
-
       }
-
     }
   }
 }
