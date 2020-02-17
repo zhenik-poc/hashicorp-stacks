@@ -1,0 +1,22 @@
+global:
+  sendAnonymousUsage: false
+
+api:
+  insecure: true
+  dashboard: true
+  debug: true
+
+entryPoints:
+  web:
+    address: ":80"
+  shara:
+    address: ":8888"
+  websecure:
+    address: ":443"
+  test-entry:
+    address: ":3000"
+providers:
+  file:
+    watch: true
+    filename: /config/rules.yml
+    debugLogGeneratedTemplate: true
