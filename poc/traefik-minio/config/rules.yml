@@ -1,55 +1,17 @@
 http:
   routers:
-    router1:
-      rule: "Host(`localhost`)"
-      service: service1
-      entryPoints:
-        - web
-    router2:
-      rule: "Path(`/t`)"
-      service: service2
-      middlewares:
-        - "remove-path"
-      entryPoints:
-        - shara
-
-#    router-to-minio1:
-#      rule: "Path(`/`)"
-#      service: "minio-service"
-#      entryPoints:
-#        - test-entry
-    router-to-minio1:
-      rule: "Path(`/minio-service`)"
-      service: "minio-service"
-      middlewares:
-        - "remove-path"
-      entryPoints:
-        - test-entry
-    router-to-minio2:
-      rule: "PathPrefix(`/minio/`)"
+    router-to-minio:
+#      https://docs.traefik.io/routing/routers/#rule
+#      based on reg expressions due to handle minio's redirects
+      rule: "PathPrefix(`/minio/`, `/minio`)"
       service: "minio-service"
       entryPoints:
         - test-entry
-
-  middlewares:
-    remove-path:
-      replacePath:
-        path: "/"
-    minio-path:
-      replacePath:
-        path: "/minio"
   services:
-    service1:
-      loadBalancer:
-        servers:
-          - url: http://httpbin.org
-    service2:
-      loadBalancer:
-        servers:
-          - url: http://test:3000
     minio-service:
       loadBalancer:
-        passHostHeader: true
+#        passHostHeader: true
+#        needs sticky cookie if more than one server behind loadBalancer
 #        sticky:
 #          cookie: {}
         servers:
