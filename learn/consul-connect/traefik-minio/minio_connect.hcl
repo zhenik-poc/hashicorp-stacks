@@ -31,29 +31,6 @@ job "s3" {
       port = 9000
       connect {
         sidecar_service {}
-        sidecar_task {
-          driver = "docker"
-          config {
-            image = "${meta.connect.sidecar_image}"
-            args  = [
-              "-c",
-              "${NOMAD_SECRETS_DIR}/envoy_bootstrap.json",
-              "-l",
-              "debug"
-            ]
-          }
-
-          logs {
-            max_files     = 2
-            max_file_size = 2 # MB
-          }
-
-          resources {
-            cpu    = 250 # MHz
-            memory = 128 # MB
-          }
-          shutdown_delay = "5s"
-        }
       }
     }
   }
