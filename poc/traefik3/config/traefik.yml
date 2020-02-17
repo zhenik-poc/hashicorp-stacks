@@ -11,10 +11,11 @@ entryPoints:
     address: ":80"
   websecure:
     address: ":443"
-
+  test-entry:
+    address: ":3000"
 providers:
-  docker:
-    exposedByDefault: false
+#  docker:
+#    exposedByDefault: false
   file:
     watch: true
     filename: /config/rules.yml

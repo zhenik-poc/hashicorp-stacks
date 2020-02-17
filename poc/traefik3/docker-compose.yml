@@ -2,25 +2,12 @@ version: '3.7'
 
 services:
   traefik:
-    image: "traefik:v2.0.4"
-    #    command:
-    #      - --entrypoints.web.address=:80
-    #      - --entrypoints.websecure.address=:443
-    #      - --api=true
-    #      - --providers.docker=true
-    #      - --providers.docker.exposedbydefault=false
-    #      - --providers.file.directory=/config/
-    #      - --global.sendAnonymousUsage=false
+    image: "traefik:v2.1.4"
     ports:
-      - "80:80"
-      - "8080:8080"
+      - "80:80"           # api
+      - "8080:8080"       # dashboard
       - "443:443"
-    labels:
-      - "traefik.enable=true"
-      # Dashboard
-      - "traefik.http.routers.traefik.rule=Host(`traefik.docker.localhost`)"
-      - "traefik.http.routers.traefik.service=api@internal"
-      - "traefik.http.routers.traefik.entrypoints=web"
+      - "3000:3000"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./config/traefik.yml:/etc/traefik/traefik.yml"
@@ -28,5 +15,6 @@ services:
 
   test:
     image: zhenik/uuid:2.0
-    ports:
-      - 3333:3000
+    container_name: test
+#    ports:
+#      - 3333:3000
