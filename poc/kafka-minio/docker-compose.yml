@@ -69,6 +69,7 @@ services:
       - kafka
 
   # source https://github.com/confluentinc/examples/blob/5.3.1-post/microservices-orders/docker-compose.yml#L183-L215
+  # service for topic creation only, is success must exit 0
   kafka-setup:
     image: confluentinc/cp-kafka:5.3.1
     hostname: kafka-setup

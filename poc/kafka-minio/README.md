@@ -1,7 +1,7 @@
 # MinIO + Kafka
 `NB!` Pay attention that Zookeeper, Kafka and Schema registry are `Confluent distribution`
-## How to run example
-1 - prepare infrastructure 
+## How to run (Makefile + docker-compose)
+1 - prepare infrastructure (wait until terminal is released)
 ```bash
 make
 ```
@@ -11,9 +11,14 @@ make
 make kafka-event-consumer-run
 ```
 
-3 - upload `.img` file to `minio/images` -> UI `localhost:9000`
+3 - upload file with format `.img` to bucket `images` -> UI `localhost:9000`
  
-## Install mc (minio client)
+4 - to stop 
+```bash
+make down
+```
+## Local install
+### Install mc (minio client)
 
 ```bash
 wget https://dl.min.io/client/mc/release/linux-amd64/mc
@@ -58,7 +63,7 @@ Check config of thee client `cat ~/.mc/config.json `
 ```
 
 Update part of local deployment:
-```json
+```
 ...
 "local": {
     "url": "http://localhost:9000",
@@ -70,7 +75,7 @@ Update part of local deployment:
 ...
 ```
 
-## Kafka
+### Kafka
 Create a topic
 ```bash 
 docker-compose exec kafka kafka-topics --create --if-not-exists --zookeeper zookeeper:2181 --partitions 10 --replication-factor 1 --topic minio-events-v1 
@@ -79,7 +84,7 @@ List topics
 ```bash
 docker-compose exec kafka kafka-topics --list --zookeeper zookeeper:2181
 ```
-## Confluent Kafkacat
+### Confluent Kafkacat
 List kafka topics
 ```bash
 docker run --tty \
