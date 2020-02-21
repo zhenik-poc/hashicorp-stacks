@@ -20,7 +20,7 @@ export CONSUL_HTTP_ADDR="172.17.0.1:8500"
 ```
 1. create proxy to zookeeper. Pay attention that port 9191
 ```bash
-consul connect proxy -service=proxy-to-zookeeper -upstream=zookeeper-client:9191 -log-level=TRACE
+consul connect proxy -service=proxy-to-zookeeper -upstream=zookeeper-client:2181 -log-level=TRACE
 ```
 2. change `config/zookeeper.properties`, use proxy port 9191
 ```bash
@@ -31,6 +31,7 @@ zookeeper.connect=127.0.0.1:9191
 bin/kafka-server-start.sh config/server.properties
 ```
 
+nomad alloc exec -t -job -task=node schema-registry /bin/bash
 ### Kafka nomad run
 0. Export nomad and consul addresses
 ```bash

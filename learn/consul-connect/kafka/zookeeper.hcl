@@ -1,5 +1,6 @@
 job "zookeeper" {
-  datacenters = ["dc1"]
+//  datacenters = ["dc1"]
+  datacenters = ["blue"]
   type        = "service"
 
   constraint {
