@@ -1,6 +1,6 @@
 job "zookeeper" {
   datacenters = ["dc1"]
-  type = "service"
+  type        = "service"
 
   constraint {
     attribute = "${attr.kernel.name}"
@@ -13,23 +13,29 @@ job "zookeeper" {
       // full set of env for cp-zookeeper
       // https://github.com/confluentinc/cp-docker-images/blob/5.3.1-post/debian/zookeeper/include/etc/confluent/docker/zookeeper.properties.template
       template {
-        destination = "local/data/.envs"
-        change_mode = "noop"
-        env = true
-        data = <<EOF
+        destination     = "local/data/.envs"
+        change_mode     = "noop"
+        env             = true
+        data            = <<EOF
+HOSTNAME=0.0.0.0
 ZOOKEEPER_SERVER_ID={{ env "NOMAD_ALLOC_INDEX" | parseInt | add 1 }}
 ZOOKEEPER_CLIENT_PORT=2181
 KAFKA_OPTS="-Dzookeeper.4lw.commands.whitelist=*"
-ZOOKEEPER_SERVERS=localhost:2888:3888
+ZOOKEEPER_SERVERS=0.0.0.0:2888:3888
 ZOOKEEPER_TICK_TIME=2000
 ZOOKEEPER_INIT_LIMIT=5
 ZOOKEEPER_SYNC_LIMIT=2
 ZOOKEEPER_MAX_CLIENT_CNXNS=60
+ZOOKEEPER_JUTE_MAX_BUFFER=4000000
+ZOOKEEPER_AUTOPURGE_SNAP_RETAIN_COUNT=10
+ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL=2
+ZOOKEEPER_LOG4J_ROOT_LOGLEVEL=DEBUG
+ZOOKEEPER_TOOLS_LOG4J_LOGLEVEL=DEBUG
 EOF
       }
       config {
-        image = "confluentinc/cp-zookeeper:5.3.1"
-        volumes = [
+        image     = "confluentinc/cp-zookeeper:5.3.1"
+        volumes   = [
           "local/data:/var/lib/zookeeper/data",
           "local/logs:/var/lib/zookeeper/log"
         ]
@@ -47,7 +53,7 @@ EOF
     }
     service {
       // There are will be two services registered
-      // `zoo` and `zoo-sidecar-proxy`
+      // `zookeeper-client` and `zookeeper-client-sidecar-proxy`
       name = "zookeeper-client"
       // make available communication for other containers to zookeeper via proxy
       port = 2181
