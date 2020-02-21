@@ -15,10 +15,10 @@ job "kafka" {
       }
       env {
         KAFKA_BROKER_ID = 1
-        KAFKA_ZOOKEEPER_CONNECT = "localhost:9191"
-        KAFKA_LOG4J_LOGGERS = "kafka.controller=INFO,kafka.producer.async.DefaultEventHandler=INFO,state.change.logger=INFO"
-        KAFKA_LISTENERS = "PLAINTEXT://127.0.0.1:9092"
-        KAFKA_ADVERTISED_LISTENERS = "PLAINTEXT://127.0.0.1:9092"
+        KAFKA_ZOOKEEPER_CONNECT = "localhost:2181"
+        KAFKA_LOG4J_LOGGERS = "kafka.controller=DEBUG,kafka.producer.async.DefaultEventHandler=DEBUG,state.change.logger=DEBUG"
+        KAFKA_LISTENERS = "PLAINTEXT://0.0.0.0:9092"
+        KAFKA_ADVERTISED_LISTENERS = "PLAINTEXT://localhost:9092"
         KAFKA_LISTENER_SECURITY_PROTOCOL_MAP = "PLAINTEXT:PLAINTEXT"
         KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR = 1
       }
@@ -40,7 +40,7 @@ job "kafka" {
           proxy {
             upstreams {
               destination_name = "zookeeper-client"
-              local_bind_port = 9191 // any open available port
+              local_bind_port = 2181 // any open available port
             }
           }
         }
