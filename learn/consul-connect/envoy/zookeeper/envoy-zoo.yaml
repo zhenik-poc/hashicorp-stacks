@@ -1,0 +1,39 @@
+static_resources:
+  listeners:
+    - name: zookeeper_listener
+      address:
+        socket_address:
+          address: 0.0.0.0
+          port_value: 12181
+      filter_chains:
+        - filters:
+          - name: envoy.filters.network.zookeeper_proxy
+            typed_config:
+              "@type": type.googleapis.com/envoy.config.filter.network.zookeeper_proxy.v1alpha1.ZooKeeperProxy
+              stat_prefix: zookeeper
+          - name: envoy.tcp_proxy
+            typed_config:
+              "@type": type.googleapis.com/envoy.config.filter.network.tcp_proxy.v2.TcpProxy
+              stat_prefix: tcp
+              cluster: local_service
+
+  clusters:
+    - name: local_service
+      connect_timeout: 0.25s
+      type: strict_dns
+      lb_policy: round_robin
+      load_assignment:
+        cluster_name: local_service
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: zookeeper
+                      port_value: 2181
+admin:
+  access_log_path: "/dev/null"
+  address:
+    socket_address:
+      address: 0.0.0.0
+      port_value: 9901

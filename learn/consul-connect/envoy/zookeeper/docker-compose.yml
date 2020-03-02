@@ -1,0 +1,25 @@
+# WIP https://github.com/envoyproxy/envoy/tree/master/source/extensions/filters/network/zookeeper_proxy
+version: "3"
+services:
+  proxy:
+    image: envoyproxy/envoy:v1.13.0
+    volumes:
+    - "./envoy-zoo.yaml:/etc/envoy/envoy.yaml"
+    expose:
+      - "12181"
+      - "9901"
+    ports:
+      - "12181:12181"
+      - "9901:9901"
+
+  zookeeper:
+    image: zookeeper:3.5.5
+    ports:
+      - "22181:2181"
+    expose:
+      - "2181"
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_PORT: 2181
+      ZOO_STANDALONE_ENABLED: "true"
+      ZOO_4LW_COMMANDS_WHITELIST: "*"
