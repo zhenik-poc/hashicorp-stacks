@@ -22,12 +22,12 @@ consul: exports
 	sudo consul agent -dev -client=${HOST_DOCKER} -dns-port=53
 
 nomad: exports
-	sudo nomad agent -dev-connect -bind=${HOST_DOCKER} -network-interface=${NETWORK_INTERFACE} -consul-address=${HOST_DOCKER}:8500
+	sudo nomad agent -dev-connect -bind=${HOST_DOCKER} -network-interface=${NETWORK_INTERFACE} -consul-address=${HOST_DOCKER}:8500 -config=./nomad.hcl
 
 vault:
 	sudo vault server -dev --dev-listen-address=${HOST_DOCKER}:8200 -dev-root-token-id=root
 
-kill:
+kill: exports
 	sudo pkill -f consul | true
 	sudo pkill -f nomad | true
 
