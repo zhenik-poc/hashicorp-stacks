@@ -17,15 +17,25 @@ all:
 
 exports:
 	export NOMAD_ADDR=http://${HOST_DOCKER}:4646
+	export CONSUL_HTTP_ADDR=http://${HOST_DOCKER}:8500
+	export VAULT_ADDR=http://${HOST_DOCKER}:8200
+	export VAULT_DEV_ROOT_TOKEN_ID=root
 # `consul agent -dev` enabled connect integration
 consul: exports
 	sudo consul agent -dev -client=${HOST_DOCKER} -dns-port=53
 
 nomad: exports
-	sudo nomad agent -dev-connect -bind=${HOST_DOCKER} -network-interface=${NETWORK_INTERFACE} -consul-address=${HOST_DOCKER}:8500 -config=./nomad.hcl
+	sudo nomad agent -dev-connect \
+		-bind=${HOST_DOCKER} \
+		-network-interface=${NETWORK_INTERFACE} \
+		-consul-address=${HOST_DOCKER}:8500 \
+		-config=./nomad.hcl
 
-vault:
-	sudo vault server -dev --dev-listen-address=${HOST_DOCKER}:8200 -dev-root-token-id=root
+vault: exports
+	sudo vault server -dev \
+		-dev-listen-address=${HOST_DOCKER}:8200 \
+		-dev-root-token-id="root"
+#		-dev-root-token-id=root \
 
 kill: exports
 	sudo pkill -f consul | true
