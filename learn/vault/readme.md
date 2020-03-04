@@ -30,3 +30,31 @@ list
 vault policy list
 vault policy read my-policy
 ```
+
+## Tokens
+```bash
+vault create token
+vault login s.VbR9cn2ermQAtut7ibZlV9Bc
+vault token revoke s.VbR9cn2ermQAtut7ibZlV9Bc
+```
+
+## Auth methods
+```bash
+vault auth enable -path=github github
+vault write auth/github/config organization=hashicorp
+vault write auth/github/map/teams/my-team value=default,my-policy
+
+vault list auth/github/map/teams
+vault auth list
+
+vault login -method=github
+vault token revoke -mode path auth/github
+vault auth disable github
+```
+
+## Vault server
+```bash
+vault operator init
+vault operator unseal
+vault login <root-token>
+```

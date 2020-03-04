@@ -12,7 +12,7 @@ X_TEST_KAFKA_JOB := ./learn/consul-connect/kafka.hcl
 X_TEST_KAFKA_JOB_NAME := kafka
 
 
-.PHONY: all exports consul nomad vault zoo-run zoo-stop zoo-status kafka-run kafka-stop kafka-status kill
+.PHONY: all exports consul nomad vault zoo-run zoo-stop zoo-status kafka-run kafka-stop kafka-status kill vault2
 all:
 
 exports:
@@ -36,6 +36,9 @@ vault: exports
 		-dev-listen-address=${HOST_DOCKER}:8200 \
 		-dev-root-token-id="root"
 #		-dev-root-token-id=root \
+
+vault2: exports
+	sudo vault server -config=vault.hcl
 
 kill: exports
 	sudo pkill -f consul | true
