@@ -32,6 +32,7 @@ job "s3" {
 
     network {
       mode = "bridge"
+      mbits = 5
     }
 
     service {

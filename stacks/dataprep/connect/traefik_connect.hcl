@@ -10,6 +10,7 @@ job "router" {
   group "traefik" {
     network {
       mode = "bridge"
+      mbits = 5
       port "dashboard" {
         # traefik dashboard by default
         to = 8080
