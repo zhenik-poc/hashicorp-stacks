@@ -12,21 +12,25 @@ X_TEST_KAFKA_JOB := ./learn/consul-connect/kafka.hcl
 X_TEST_KAFKA_JOB_NAME := kafka
 
 
-.PHONY: all exports consul nomad vault zoo-run zoo-stop zoo-status kafka-run kafka-stop kafka-status kill vault2
+.PHONY: all exports consul nomad vault zoo-run zoo-stop zoo-status kafka-run kafka-stop kafka-status kill vault2 consul2 nomad2
 all:
 
 exports:
 	export NOMAD_ADDR=http://${HOST_DOCKER}:4646
 	export CONSUL_HTTP_ADDR=http://${HOST_DOCKER}:8500
-	export VAULT_ADDR=http://${HOST_DOCKER}:8200
-	export VAULT_DEV_ROOT_TOKEN_ID=root
+	#export VAULT_ADDR=http://${HOST_DOCKER}:8200
+	#export VAULT_DEV_ROOT_TOKEN_ID=root
 # `consul agent -dev` enabled connect integration
 consul: exports
-	sudo consul agent -dev -client=${HOST_DOCKER} -dns-port=53
+	sudo consul agent -dev \
+		-client=${HOST_DOCKER} \
+		-advertise=${HOST_DOCKER} \
+		-bind '{{ GetInterfaceIP "docker0" }}' \
+		-dns-port=53
 
 nomad: exports
-	sudo nomad agent -dev-connect \
-		-bind=${HOST_DOCKER} \
+	sudo nomad agent -dev \
+		-bind '{{ GetInterfaceIP "docker0" }}' \
 		-network-interface=${NETWORK_INTERFACE} \
 		-consul-address=${HOST_DOCKER}:8500 \
 		-config=./nomad.hcl
