@@ -5,7 +5,7 @@ make consul
 ```
 in separate terminal
 ```bash
-export NOMAD_ADDR=http://172.17.0.1:4646
+source .env
 make nomad
 ```
 
