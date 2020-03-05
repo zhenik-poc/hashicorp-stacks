@@ -9,7 +9,7 @@ job "s3" {
 
   group "minio" {
     network {
-      mode = "bridge"
+      mbits = 5
       port "client" {
         to = 9000
       }
@@ -40,6 +40,13 @@ job "s3" {
         MINIO_ACCESS_KEY = "minio"
         MINIO_SECRET_KEY = "minio123"
       }
+//      resources {
+//        cpu = 100
+//        memory = 256
+//        network {
+//          mbits = 1
+//        }
+//      }
     }
   }
 }
