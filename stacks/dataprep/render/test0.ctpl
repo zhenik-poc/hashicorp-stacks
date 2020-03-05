@@ -1,1 +1,1 @@
-{{range service "minio-dashboard"}}{{.Address}}:{{.Port}}{{end}}
+{{range service "minio-dashboard-internal"}}{{.Address}}:{{.Port}}{{end}}
