@@ -49,20 +49,20 @@ http:
 EOF
       }
       config {
-        image = "traefik:v2.1.4"
+        image   = "traefik:v2.1.4"
         volumes = [
           "local/traefik.yml:/etc/traefik/traefik.yml",
           "local/rules.yml:/config/rules.yml"
         ]
         port_map = {
           dashboard   = 8080
-          apiMinio    = 3000
+          minio       = 3000
         }
       }
       service {
         name = "traefik-dashboard"
-        tags = ["traefik-dashboard-tag"]
-        port     = "dashboard"
+        tags = ["traefik-dashboard", "traefik", "dashboard", "http"]
+        port = "dashboard"
         check {
           type     = "http"
           path     = "/dashboard"
@@ -70,13 +70,26 @@ EOF
           timeout  = "2s"
         }
       }
+      service {
+        name = "traefik-minio"
+        tags = ["traefik-minio", "traefik-s3", "traefik", "http"]
+        port = "minio"
+        check {
+          type     = "http"
+          path     = "/minio/health/live"
+          interval = "5s"
+          port     = "minio"
+          timeout  = "2s"
+        }
+      }
       resources {
-        cpu = 100
-        memory = 256
+        cpu     = 100
+        memory  = 256
         network {
-          mbits = 1
+          mode  = "host"
+          mbits = 5
           port "dashboard" {}
-          port "apiMinio" {}
+          port "minio" {}
         }
       }
     }

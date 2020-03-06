@@ -21,10 +21,10 @@ job "s3" {
         read_only   = false
       }
       config {
-        image = "minio/minio:RELEASE.2020-02-27T00-23-05Z"
-        args = ["server", "/data",]
-        port_map = {
-          minio = 9000
+        image     = "minio/minio:RELEASE.2020-02-27T00-23-05Z"
+        args      = ["server", "/data",]
+        port_map  = {
+          dashboard = 9000
         }
       }
       env {
@@ -34,21 +34,38 @@ job "s3" {
       service {
         name = "minio-dashboard-gateway"
         tags = ["s3", "minio", "gateway"]
-        port = "minio"
+        port = "dashboard"
+        # // https://docs.min.io/docs/minio-monitoring-guide.html
+        check {
+          name          = "check-minio-dashboard-available"
+          type          = "http"
+          path          = "/minio/health/live"
+          port          = "dashboard"
+          interval      = "10s"
+          timeout       = "2s"
+        }
       }
       service {
-//        https://nomadproject.io/docs/job-specification/service/#inlinecode-address_mode-4
-        address_mode = "driver"
-        name = "minio-dashboard-internal"
-        tags = ["s3", "minio", "internal"]
-        port = "minio"
+        address_mode  = "driver"
+        name          = "minio-dashboard-internal"
+        tags          = ["s3", "minio", "internal"]
+        port          = "dashboard"
+        check {
+          name          = "check-minio-dashboard-available"
+          type          = "http"
+          path          = "/minio/health/live"
+          port          = "dashboard"
+          interval      = "10s"
+          timeout       = "2s"
+        }
       }
       resources {
-        cpu = 100
-        memory = 256
+        cpu     = 100
+        memory  = 256
         network {
+          mode  = "host"
           mbits = 5
-          port "minio" {}
+          port "dashboard" {}
         }
       }
     }
