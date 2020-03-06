@@ -33,7 +33,7 @@ job "router" {
     }
     service {
       name = "traefik-minio"
-      tags = ["traefik-minio", "traefik", "http"]
+      tags = ["traefik-minio", "traefik-s3", "traefik", "http"]
       port     = "minio"
       check {
         type     = "http"

@@ -17,7 +17,7 @@ job "s3" {
     }
     service {
       name = "minio-dashboard"
-      tags = ["minio", "dashboard", "http"]
+      tags = ["minio", "s3", "dashboard", "http"]
       port = "dashboard"
       # // https://docs.min.io/docs/minio-monitoring-guide.html
       check {
