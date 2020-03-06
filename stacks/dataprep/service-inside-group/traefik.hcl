@@ -9,25 +9,37 @@ job "router" {
 
   group "traefik" {
     network {
+      mode = "bridge"
       mbits = 5
       port "dashboard" {
         # traefik dashboard by default
         to = 8080
       }
-      port "apiMinio" {
+      port "minio" {
         # some-entry point
         to = 3000
       }
     }
     service {
       name = "traefik-dashboard"
-      tags = ["traefik-dashboard-tag"]
-
+      tags = ["traefik-dashboard", "traefik", "dashboard", "http"]
+      port = "dashboard"
       check {
         type     = "http"
-        port     = "dashboard"
         path     = "/dashboard"
         interval = "5s"
+        timeout  = "2s"
+      }
+    }
+    service {
+      name = "traefik-minio"
+      tags = ["traefik-minio", "traefik", "http"]
+      port     = "minio"
+      check {
+        type     = "http"
+        path     = "/minio/health/live"
+        interval = "5s"
+        port     = "minio"
         timeout  = "2s"
       }
     }

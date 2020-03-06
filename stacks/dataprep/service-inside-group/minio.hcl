@@ -9,15 +9,26 @@ job "s3" {
 
   group "minio" {
     network {
+      mode = "bridge"
       mbits = 5
-      port "client" {
+      port "dashboard" {
         to = 9000
       }
     }
     service {
       name = "minio-dashboard"
-      tags = ["minio-dashboard-tag"]
-      port = "client"
+      tags = ["minio", "dashboard", "http"]
+      port = "dashboard"
+      # // https://docs.min.io/docs/minio-monitoring-guide.html
+      check {
+        address_mode  = "driver"
+        name          = "check-minio-dashboard-available"
+        type          = "http"
+        path          = "/minio/health/live"
+        port          = "dashboard"
+        interval      = "10s"
+        timeout       = "2s"
+      }
     }
 
     volume "minio-data" {
@@ -40,13 +51,6 @@ job "s3" {
         MINIO_ACCESS_KEY = "minio"
         MINIO_SECRET_KEY = "minio123"
       }
-//      resources {
-//        cpu = 100
-//        memory = 256
-//        network {
-//          mbits = 1
-//        }
-//      }
     }
   }
 }
