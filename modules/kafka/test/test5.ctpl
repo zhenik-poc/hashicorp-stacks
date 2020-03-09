@@ -1,0 +1,2 @@
+KAFKA_ZOOKEEPER_CONNECT = "{{range services}}{{if in .Tags "zookeeper-client"}}{{$services:=service .Name "passing"}}{{range $services}}{{if in .Tags "zookeeper-client"}}{{.Address}}:{{.Port}},{{end}}{{end}}{{end}}{{end}}"
+KAFKA_BROKER_ID = "{{ env "NOMAD_ALLOC_INDEX" | parseInt | add 1 }}"

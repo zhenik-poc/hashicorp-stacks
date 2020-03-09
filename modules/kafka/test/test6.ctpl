@@ -1,0 +1,1 @@
+{{range service "zookeeper|any"}}{{.Address}}:{{.Port}}{{end}}
