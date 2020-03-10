@@ -1,6 +1,6 @@
 job "kafka" {
   datacenters = ["dc1"]
-  type = "service"
+  type        = "service"
 
   constraint {
     attribute = "${attr.kernel.name}"
@@ -11,7 +11,7 @@ job "kafka" {
     task "node" {
       driver = "docker"
       config {
-        image = "confluentinc/cp-kafka:5.4.0"
+        image   = "confluentinc/cp-kafka:5.4.0"
         volumes = [
           "local/data:/var/lib/kafka/data"
         ]
@@ -37,13 +37,31 @@ EOF
         network {
           mode  = "bridge"
           mbits = 5
-//          port "client" {
-//            to = 9092
-//          }
           // }===|==>---
+          // Random port will be mapped to itself i container (same port in container)
+          // Idea that this port is chosen randomly
           port "external" {
             to = -1
           }
+        }
+      }
+      service {
+        name = "kafka"
+        tags = ["kafka", "external", "tcp"]
+        port = "external"
+        check {
+          name      = "check-kafka-external-available"
+          type      = "tcp"
+          interval  = "10s"
+          timeout   = "2s"
+        }
+        check {
+          address_mode  ="driver"
+          name          = "check-kafka-internal-available"
+          type          = "tcp"
+          port          = 9092
+          interval      = "10s"
+          timeout       = "2s"
         }
       }
     }
