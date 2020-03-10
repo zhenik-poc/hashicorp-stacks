@@ -5,7 +5,7 @@ job "zookeeper" {
   group "standalone" {
     network {
       mode = "bridge"
-      mbits = 5
+      mbits = 3
       port "client" {
         to = 2181
       }

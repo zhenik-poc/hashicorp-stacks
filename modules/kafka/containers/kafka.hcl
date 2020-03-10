@@ -36,7 +36,7 @@ EOF
         memory = 1024 # MB // otherwise, Kafka will fail with - OOMKilled 137
         network {
           mode  = "bridge"
-          mbits = 5
+          mbits = 3
           // }===|==>---
           // Random port will be mapped to itself i container (same port in container)
           // Idea that this port is chosen randomly
