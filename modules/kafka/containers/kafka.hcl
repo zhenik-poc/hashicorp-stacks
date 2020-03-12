@@ -8,6 +8,32 @@ job "kafka" {
   }
 
   group "k-group" {
+
+    network {
+      mode  = "bridge"
+      mbits = 3
+      // }===|==>---
+      // Random port will be mapped to itself in container (same port in container)
+      // Idea that this port is chosen randomly
+      port "external" {
+        to = -1
+      }
+      port "internal" {
+        to = 9092
+      }
+    }
+    service {
+      name = "kafka"
+      tags = ["kafka", "external", "tcp"]
+      port = "external"
+      check {
+        name = "check-kafka-external-available"
+        type = "tcp"
+        interval = "10s"
+        timeout = "2s"
+      }
+    }
+
     task "node" {
       driver = "docker"
       config {
@@ -32,39 +58,8 @@ KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092,PLAINTEXT_HOST://172.17.0.
 EOF
       }
       resources {
-        cpu    = 200 # MHz
         memory = 1024 # MB // otherwise, Kafka will fail with - OOMKilled 137
-        network {
-          mode  = "bridge"
-          mbits = 3
-          // }===|==>---
-          // Random port will be mapped to itself i container (same port in container)
-          // Idea that this port is chosen randomly
-          port "external" {
-            to = -1
-          }
-        }
-      }
-      service {
-        name = "kafka"
-        tags = ["kafka", "external", "tcp"]
-        port = "external"
-        check {
-          name      = "check-kafka-external-available"
-          type      = "tcp"
-          interval  = "10s"
-          timeout   = "2s"
-        }
-        check {
-          address_mode  ="driver"
-          name          = "check-kafka-internal-available"
-          type          = "tcp"
-          port          = 9092
-          interval      = "10s"
-          timeout       = "2s"
-        }
       }
     }
-
   }
 }
