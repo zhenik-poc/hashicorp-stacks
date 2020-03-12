@@ -1,0 +1,1 @@
+{{range service "kafka|any"}}{{.Address}}:{{.Port}}{{end}}
