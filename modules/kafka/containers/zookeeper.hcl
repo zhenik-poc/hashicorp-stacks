@@ -1,10 +1,11 @@
 job "zookeeper" {
+
   datacenters = ["dc1"]
   type = "service"
 
   group "z-group" {
     network {
-      mode = "bridge"
+      mode  = "bridge"
       mbits = 3
       port "client" {
         to = 2181
@@ -15,16 +16,16 @@ job "zookeeper" {
       tags = ["zookeeper", "service-discovery", "tcp"]
       port = "client"
       check {
-        name = "check-zookeeper-available"
-        type     = "tcp"
-        interval = "10s"
-        timeout  = "2s"
+        name      = "check-zookeeper-available"
+        type      = "tcp"
+        interval  = "10s"
+        timeout   = "2s"
       }
     }
     task "node" {
       driver = "docker"
       config {
-        image = "confluentinc/cp-zookeeper:5.4.0"
+        image   = "confluentinc/cp-zookeeper:5.4.1"
         volumes = [
           "local/lib:/var/lib/zookeeper",
           "local/logs:/var/log/zookeeper"

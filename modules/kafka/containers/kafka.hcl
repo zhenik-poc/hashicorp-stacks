@@ -8,7 +8,6 @@ job "kafka" {
   }
 
   group "k-group" {
-
     network {
       mode  = "bridge"
       mbits = 3
@@ -33,16 +32,17 @@ job "kafka" {
         timeout = "2s"
       }
     }
-
     task "node" {
       driver = "docker"
       config {
-        image   = "confluentinc/cp-kafka:5.4.0"
+        image   = "confluentinc/cp-kafka:5.4.1"
         volumes = [
           "local/data:/var/lib/kafka/data"
         ]
-      }
+        port_map {
 
+        }
+      }
       template {
         destination     = "local/data/.envs"
         change_mode     = "noop"
