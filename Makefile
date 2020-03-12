@@ -29,8 +29,8 @@ consul: exports
 		-dns-port=53
 
 nomad: exports
-	sudo nomad agent -dev \
-		-bind '{{ GetInterfaceIP "docker0" }}' \
+	sudo nomad agent -dev-connect \
+		-bind='{{ GetInterfaceIP "docker0" }}' \
 		-network-interface=${NETWORK_INTERFACE} \
 		-consul-address=${HOST_DOCKER}:8500 \
 		-config=./nomad.hcl
