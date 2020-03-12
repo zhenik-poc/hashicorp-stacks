@@ -2,7 +2,7 @@ job "zookeeper" {
   datacenters = ["dc1"]
   type = "service"
 
-  group "standalone" {
+  group "z-group" {
     network {
       mode = "bridge"
       mbits = 3

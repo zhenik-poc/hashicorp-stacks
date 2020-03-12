@@ -7,7 +7,7 @@ job "kafka" {
     value     = "linux"
   }
 
-  group "standalone" {
+  group "k-group" {
     task "node" {
       driver = "docker"
       config {
