@@ -25,7 +25,7 @@ consul: exports
 	sudo consul agent -dev \
 		-client=${HOST_DOCKER} \
 		-advertise=${HOST_DOCKER} \
-		-bind '{{ GetInterfaceIP "docker0" }}' \
+		-bind='{{ GetInterfaceIP "docker0" }}' \
 		-dns-port=53
 
 nomad: exports
