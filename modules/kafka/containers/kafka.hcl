@@ -11,14 +11,8 @@ job "kafka" {
     network {
       mode  = "bridge"
       mbits = 3
-      // }===|==>---
-      // Random port will be mapped to itself in container (same port in container)
-      // Idea that this port is chosen randomly
       port "external" {
         to = -1
-      }
-      port "internal" {
-        to = 9092
       }
     }
     service {
@@ -39,9 +33,6 @@ job "kafka" {
         volumes = [
           "local/data:/var/lib/kafka/data"
         ]
-        port_map {
-
-        }
       }
       template {
         destination     = "local/data/.envs"
@@ -53,7 +44,7 @@ KAFKA_ZOOKEEPER_CONNECT={{range service "zookeeper|any"}}{{.Address}}:{{.Port}}{
 KAFKA_LOG4J_LOGGERS="kafka.controller=DEBUG,kafka.producer.async.DefaultEventHandler=DEBUG,state.change.logger=DEBUG"
 KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
 KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092,PLAINTEXT_HOST://172.17.0.1:{{ env "NOMAD_HOST_PORT_external" }}
+KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092,PLAINTEXT_HOST://{{ env "attr.unique.network.ip-address" }}:{{ env "NOMAD_HOST_PORT_external" }}
 #KAFKA_OPTS="-Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.port=5555"
 EOF
       }
