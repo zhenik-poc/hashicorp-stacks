@@ -1,6 +1,6 @@
 # Notes about issues running zookeeper+kafka+schema-registry
 ## My setup spec
-
+//todo
 ## Related links schema-registry
 1. [PR with a patch, but it is out-dated](https://github.com/confluentinc/schema-registry/pull/236) 
 2. [Issue #199](https://github.com/confluentinc/schema-registry/issues/199)
