@@ -1,6 +1,5 @@
 job "zookeeper" {
-//  datacenters = ["dc1"]
-  datacenters = ["blue"]
+  datacenters = ["dc1"]
   type        = "service"
 
   constraint {
@@ -59,11 +58,66 @@ EOF
       // make available communication for other containers to zookeeper via proxy
       port = 2181
       connect {
-        sidecar_service {}
+        sidecar_service {
+          proxy {
+            config {
+              envoy_public_listener_json = <<EOL
+          {
+            "@type": "type.googleapis.com/envoy.api.v2.Listener",
+            "name": "public_listener:0.0.0.0:21000",
+            "address": {
+              "socketAddress": {
+                "address": "0.0.0.0",
+                "portValue": 21000
+              }
+            },
+            "filterChains": [
+              {
+                "filters": [
+                  {
+                    "name": "envoy.http_connection_manager",
+                    "config": {
+                      "stat_prefix": "public_listener",
+                      "route_config": {
+                        "name": "local_route",
+                        "virtual_hosts": [
+                          {
+                            "name": "backend",
+                            "domains": ["*"],
+                            "routes": [
+                              {
+                                "match": {
+                                  "prefix": "/"
+                                },
+                                "route": {
+                                  "cluster": "local_app"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      "http_filters": [
+                        {
+                          "name": "envoy.router",
+                          "config": {}
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+          EOL
+            }
+          }
+        }
         sidecar_task {
           driver = "docker"
           config {
-            image = "${meta.connect.sidecar_image}"
+//            image = "${meta.connect.sidecar_image}"
+            image = "envoyproxy/envoy:v1.13.0"
             args  = [
               "-c",
               "${NOMAD_SECRETS_DIR}/envoy_bootstrap.json",

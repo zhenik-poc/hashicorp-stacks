@@ -58,3 +58,11 @@ vault operator init
 vault operator unseal
 vault login <root-token>
 ```
+
+## Vault secret engines
+```bash
+vault secrets list -detailed
+
+
+vault secrets enable -path=secret kv-v2
+```
