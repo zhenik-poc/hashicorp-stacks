@@ -42,7 +42,7 @@ EOF
           name      = "check schema-registry rest available"
           type      = "http"
           path      = "/subjects"
-          interval  = "60s"
+          interval  = "10s"
           timeout   = "4s"
         }
       }

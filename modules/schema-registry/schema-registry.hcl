@@ -34,6 +34,18 @@ EOF
           port "http" {}
         }
       }
+      service {
+        name = "schema-registry"
+        tags = ["schema-registry", "http"]
+        port = "http"
+        check {
+          name      = "check schema-registry rest available"
+          type      = "http"
+          path      = "/subjects"
+          interval  = "10s"
+          timeout   = "4s"
+        }
+      }
     }
   }
 }
