@@ -24,7 +24,7 @@ job "schema-registry" {
         data        = <<EOF
 SCHEMA_REGISTRY_HOST_NAME=0.0.0.0
 SCHEMA_REGISTRY_LISTENERS="http://0.0.0.0:8081"
-SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS="PLAINTEXT://{{range service "kafka|any"}}{{.Address}}:{{.Port}}{{end}}"
+SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS="PLAINTEXT://{{ $requiredTags := parseJSON `["kafka-special-tag", "kafka"]` }}{{range service "kafka|any"}}{{if .Tags | containsAll $requiredTags}}{{.Address}}:{{.Port}}{{end}}{{end}}"
 EOF
       }
       resources {

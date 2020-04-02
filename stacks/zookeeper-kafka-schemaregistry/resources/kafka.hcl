@@ -17,7 +17,7 @@ job "kafka" {
     }
     service {
       name = "kafka"
-      tags = ["kafka", "external", "tcp"]
+      tags = ["kafka", "external", "tcp", "kafka-special-tag"]
       port = "external"
       check {
         name = "check-kafka-external-available"
@@ -34,13 +34,14 @@ job "kafka" {
           "local/data:/var/lib/kafka/data"
         ]
       }
+# consul-template search via multiple tags https://github.com/hashicorp/consul-template/issues/816#issuecomment-345075521
       template {
         destination     = "local/data/.envs"
         change_mode     = "noop"
         env             = true
         data            = <<EOF
 KAFKA_BROKER_ID={{ env "NOMAD_ALLOC_INDEX" | parseInt | add 1 }}
-KAFKA_ZOOKEEPER_CONNECT={{range service "zookeeper|any"}}{{.Address}}:{{.Port}}{{end}}
+KAFKA_ZOOKEEPER_CONNECT={{ $requiredTags := parseJSON `["zookeeper-special-tag", "zookeeper", "service-discovery"]` }}{{range service "zookeeper|any"}}{{if .Tags | containsAll $requiredTags}}{{.Address}}:{{.Port}}{{end}}{{end}}
 KAFKA_LOG4J_LOGGERS="kafka.controller=DEBUG,kafka.producer.async.DefaultEventHandler=DEBUG,state.change.logger=DEBUG"
 KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
 KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT

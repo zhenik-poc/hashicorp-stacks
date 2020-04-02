@@ -13,7 +13,7 @@ job "zookeeper" {
     }
     service {
       name = "zookeeper"
-      tags = ["zookeeper", "service-discovery", "tcp"]
+      tags = ["zookeeper", "service-discovery", "tcp", "zookeeper-special-tag"]
       port = "client"
       check {
         name      = "check-zookeeper-available"
