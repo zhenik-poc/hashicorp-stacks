@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  test:
+    image: zhenik/sleep:2.0
+#    command: bash -c "
+#      echo HERE
+#      "
+    command: /bin/bash -c 'env'
+    environment:
+      - SLEEP_TIME=1
+#    command: bash -c export SCHEMA_REGISTRY_HOST_NAME=$HOSTNAME && /docker-entrypoint.sh
+#    command: "bash -c 'echo HERE ' && 'echo $HOSTNAME   subdomain.domain.com' >> /etc/hosts && /docker-entrypoint.sh"
