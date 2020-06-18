@@ -12,7 +12,7 @@ X_TEST_KAFKA_JOB := ./learn/consul-connect/kafka.hcl
 X_TEST_KAFKA_JOB_NAME := kafka
 
 
-.PHONY: all exports consul nomad vault zoo-run zoo-stop zoo-status kafka-run kafka-stop kafka-status kill vault2 consul2 nomad2
+.PHONY: all exports consul nomad vault zoo-run zoo-stop zoo-status kafka-run kafka-stop kafka-status kill vault2 consul1 nomad1
 all:
 
 exports:
@@ -64,3 +64,9 @@ kafka-stop:
 kafka-status:
 	nomad status ${X_TEST_KAFKA_JOB_NAME}
 
+consul1:
+	sudo consul agent -dev -config-file=consul.hcl
+nomad1:
+	sudo nomad agent -dev-connect -config=nomad.hcl
+vault1:
+	sudo vault server -dev -dev-root-token-id=root -config=./vault.hcl
